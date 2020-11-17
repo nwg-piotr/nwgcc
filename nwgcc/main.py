@@ -2,6 +2,7 @@
 
 # Dependencies: python-pyalsa
 # Optional: bluez bluez-utils
+# User defined commands: blueman-manager
 
 import gi
 import os
@@ -12,7 +13,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 from pyalsa import alsamixer
 
-from tools import cmd2string, get_volume, set_volume, bt_on, is_command
+from tools import cmd2string, get_volume, set_volume, bt_on, bt_service_enabled, is_command
 
 mixer = alsamixer.Mixer()
 mixer.attach()
@@ -119,7 +120,7 @@ class CustomRow(Gtk.EventBox):
     def launch(self, widget, event, cmd):
         print("Executing '{}'".format(cmd))
         subprocess.Popen('exec {}'.format(cmd), shell=True)
-        GLib.timeout_add(1000, Gtk.main_quit)
+        GLib.timeout_add(5000, Gtk.main_quit)
 
     def on_enter_notify_event(self, widget, event):
         self.hbox.set_property("name", "row-selected")
@@ -190,7 +191,7 @@ class MyWindow(Gtk.Window):
                 h_box = CustomRow("Disconnected", icon=ICONS["wifi-off"], cmd=CLI_COMMANDS["network"])
             v_box.pack_start(h_box, True, True, 0)
         
-        if is_command(CLI_COMMANDS["get_bluetooth"].split()[0]):
+        if bt_service_enabled() and is_command(CLI_COMMANDS["get_bluetooth"].split()[0]):
             if bt_on(CLI_COMMANDS["get_bluetooth"]):
                 h_box = CustomRow("Enabled", icon=ICONS["bt-on"], cmd=CLI_COMMANDS["bluetooth"])
             else:

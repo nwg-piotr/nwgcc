@@ -22,6 +22,19 @@ def bt_on(cmd):
     return output.split()[1] == "yes"
 
 
+def bt_service_enabled():
+    result = False
+    if is_command("systemctl"):
+        try:
+            result = subprocess.check_output("systemctl is-enabled bluetooth.service", shell=True).decode(
+                "utf-8").strip() == "enabled"
+        except subprocess.CalledProcessError:
+            # the command above returns the 'disabled` status w/ CalledProcessError, exit status 1
+            pass
+    return result
+
+
+
 def cmd2string(cmd):
     return subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
 
