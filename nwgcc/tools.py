@@ -19,9 +19,9 @@ def set_volume(mixer, percent, channel="Master"):
 
 def get_battery(cmd):
     msg = ""
+    perc_val = 0
     if cmd.split()[0] == "upower":
         bat = []
-        percentage = 0
         try:
             bat = cmd2string(cmd).splitlines()
         except:
@@ -32,8 +32,10 @@ def get_battery(cmd):
             if "time to empty" in line:
                 line = line.replace("time to empty", "time_to_empty")
             parts = line.split()
+
             if "percentage:" in parts[0]:
                 percentage = parts[1]
+                perc_val = int(percentage.split("%")[0])
             if "state:" in parts[0]:
                 state = parts[1]
             if "time_to_empty:" in parts[0]:
@@ -48,9 +50,9 @@ def get_battery(cmd):
         if bat:
             parts = bat.split()
             msg = " ".join(parts[2:])
-            percentage = int(parts[3].split("%")[0])
-            print(percentage)
-    return msg
+            perc_val = int(parts[3].split("%")[0])
+            print(perc_val)
+    return msg, perc_val
 
 
 def bt_on(cmd):

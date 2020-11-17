@@ -101,12 +101,18 @@ def create_image(icon, size):
     return image
 
 
+def launch_from_row(widget, event, cmd):
+    print("Executing '{}'".format(cmd))
+    subprocess.Popen('exec {}'.format(cmd), shell=True)
+    GLib.timeout_add(50, Gtk.main_quit)
+
+
 class CustomRow(Gtk.EventBox):
     def __init__(self, name, cmd="", icon=None):
         Gtk.EventBox.__init__(self)
         self.hbox = Gtk.HBox()
         self.hbox.set_property("name", "row-normal")
-        image = create_image(icon, ICON_SIZE_SMALL)
+        image = create_image(icon, ICON_SIZE_SMALL) if icon else None
         label = Gtk.Label()
         label.set_text(name)
         if image:
@@ -114,14 +120,9 @@ class CustomRow(Gtk.EventBox):
         self.hbox.pack_start(label, False, False, 4)
         self.add(self.hbox)
         if cmd:
-            self.connect('button-press-event', self.launch, cmd)
+            self.connect('button-press-event', launch_from_row, cmd)
             self.connect('enter-notify-event', self.on_enter_notify_event)
             self.connect('leave-notify-event', self.on_leave_notify_event)
-
-    def launch(self, widget, event, cmd):
-        print("Executing '{}'".format(cmd))
-        subprocess.Popen('exec {}'.format(cmd), shell=True)
-        GLib.timeout_add(5000, Gtk.main_quit)
 
     def on_enter_notify_event(self, widget, event):
         self.hbox.set_property("name", "row-selected")
@@ -142,11 +143,9 @@ class CustomButton(Gtk.Button):
         self.connect("clicked", self.launch, cmd)
 
     def launch(self, widget, cmd):
-        """subprocess.Popen('exec {}'.format(cmd), shell=True)
-        Gtk.main_quit()"""
         print("Executing '{}'".format(cmd))
         subprocess.Popen('exec {}'.format(cmd), shell=True)
-        GLib.timeout_add(1000, Gtk.main_quit)
+        GLib.timeout_add(50, Gtk.main_quit)
 
 
 class MyWindow(Gtk.Window):
@@ -200,13 +199,15 @@ class MyWindow(Gtk.Window):
             v_box.pack_start(h_box, True, True, 0)
 
         msg = ""
+        perc_val = 0
         if is_command(CLI_COMMANDS["get_battery"].split()[0]):
-            msg = get_battery(CLI_COMMANDS["get_battery"])
+            msg, perc_val = get_battery(CLI_COMMANDS["get_battery"])
         elif is_command(CLI_COMMANDS["get_battery_alt"].split()[0]):
-            msg = get_battery(CLI_COMMANDS["get_battery_alt"])
+            msg, perc_val = get_battery(CLI_COMMANDS["get_battery_alt"])
+        print(perc_val)
         if msg:
-            h_box = CustomRow(msg, icon=ICONS["battery"])
-            v_box.pack_start(h_box, True, True, 0)
+            row = CustomRow(msg, icon=ICONS["battery"])
+            v_box.pack_start(row, True, True, 0)
 
         sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
         v_box.add(sep)
