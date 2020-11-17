@@ -17,6 +17,42 @@ def set_volume(mixer, percent, channel="Master"):
     element.set_volume_all(int(percent * max_vol / 100))
 
 
+def get_battery(cmd):
+    msg = ""
+    if cmd.split()[0] == "upower":
+        bat = []
+        percentage = 0
+        try:
+            bat = cmd2string(cmd).splitlines()
+        except:
+            pass
+        state, time, percentage = "", "", ""
+        for line in bat:
+            line = line.strip()
+            if "time to empty" in line:
+                line = line.replace("time to empty", "time_to_empty")
+            parts = line.split()
+            if "percentage:" in parts[0]:
+                percentage = parts[1]
+            if "state:" in parts[0]:
+                state = parts[1]
+            if "time_to_empty:" in parts[0]:
+                time = " ".join(parts[1:])
+        msg = "{} {} {}".format(percentage, state, time)
+    elif cmd.split()[0] == "acpi":
+        bat = ""
+        try:
+            bat = cmd2string(cmd).splitlines()[0]
+        except:
+            pass
+        if bat:
+            parts = bat.split()
+            msg = " ".join(parts[2:])
+            percentage = int(parts[3].split("%")[0])
+            print(percentage)
+    return msg
+
+
 def bt_on(cmd):
     output = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
     return output.split()[1] == "yes"
@@ -32,7 +68,6 @@ def bt_service_enabled():
             # the command above returns the 'disabled` status w/ CalledProcessError, exit status 1
             pass
     return result
-
 
 
 def cmd2string(cmd):

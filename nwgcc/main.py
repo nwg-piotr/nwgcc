@@ -13,7 +13,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 from pyalsa import alsamixer
 
-from tools import cmd2string, get_volume, set_volume, bt_on, bt_service_enabled, is_command
+from tools import cmd2string, get_volume, set_volume, bt_on, bt_service_enabled, get_battery, is_command
 
 mixer = alsamixer.Mixer()
 mixer.attach()
@@ -62,6 +62,7 @@ CLI_COMMANDS: dict = {
     "get_host": "uname -n",
     "get_ssid": "iwgetid -r",
     "get_battery": "upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\ full|to\\ empty|percentage'",
+    "get_battery_alt": "acpi",
     "get_bluetooth": "bluetoothctl show | grep Powered",
     "network": "nm-connection-editor",
     "bluetooth": "blueman-manager"
@@ -198,28 +199,15 @@ class MyWindow(Gtk.Window):
                 h_box = CustomRow("Disabled", icon=ICONS["bt-off"], cmd=CLI_COMMANDS["bluetooth"])
             v_box.pack_start(h_box, True, True, 0)
 
+        msg = ""
         if is_command(CLI_COMMANDS["get_battery"].split()[0]):
-            bat = []
-            try:
-                bat = cmd2string(CLI_COMMANDS["get_battery"]).splitlines()
-            except:
-                pass
-            state, time, percentage = "", "", ""
-            for line in bat:
-                line = line.strip()
-                if "time to empty" in line:
-                    line = line.replace("time to empty", "time_to_empty")
-                parts = line.split()
-                if "percentage:" in parts[0]:
-                    percentage = parts[1]
-                if "state:" in parts[0]:
-                    state = parts[1]
-                if "time_to_empty:" in parts[0]:
-                    time = " ".join(parts[1:])
-            msg = "{} {} {}".format(percentage, state, time)
+            msg = get_battery(CLI_COMMANDS["get_battery"])
+        elif is_command(CLI_COMMANDS["get_battery_alt"].split()[0]):
+            msg = get_battery(CLI_COMMANDS["get_battery_alt"])
+        if msg:
             h_box = CustomRow(msg, icon=ICONS["battery"])
             v_box.pack_start(h_box, True, True, 0)
-        
+
         sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
         v_box.add(sep)
 
