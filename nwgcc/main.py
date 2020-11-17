@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Dependencies: python-pyalsa
+# Optional: bluez bluez-utils
+
 import gi
 import os
 import sys
@@ -182,7 +185,7 @@ class MyWindow(Gtk.Window):
             except:
                 pass
             if ssid:
-                h_box = CustomRow(ssid, icon=ICONS["wifi-on"])
+                h_box = CustomRow(ssid, icon=ICONS["wifi-on"], cmd=CLI_COMMANDS["network"])
             else:
                 h_box = CustomRow("Disconnected", icon=ICONS["wifi-off"], cmd=CLI_COMMANDS["network"])
             v_box.pack_start(h_box, True, True, 0)
