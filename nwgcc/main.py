@@ -59,7 +59,7 @@ CLI_COMMANDS: dict = {
     "get_ssid": "iwgetid -r",
     "get_battery": "upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\ full|to\\ empty|percentage'",
     "get_bluetooth": "bluetoothctl show | grep Powered",
-    "network": "alacritty -e nmtui",
+    "network": "nm-connection-editor",
     "bluetooth": "blueman-manager"
 }
 
