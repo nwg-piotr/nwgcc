@@ -14,13 +14,8 @@ import argparse
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
-from pyalsa import alsamixer
 
 from tools import cmd2string, get_volume, set_volume, bt_on, bt_name, bt_service_enabled, get_battery, is_command, check_all_commands
-
-mixer = alsamixer.Mixer()
-mixer.attach()
-mixer.load()
 
 ICON_SIZE_SMALL: int = 16
 ICON_SIZE_LARGE: int = 24
@@ -87,7 +82,11 @@ ICONS: dict = {
     "wifi-on": "network-wireless",
     "wifi-off": "network-wireless-offline",
     "bt-on": "bluetooth-active",
-    "bt-off": "bluetooth-disabled"
+    "bt-off": "bluetooth-disabled",
+    "volume-low": "audio-volume-low",
+    "volume-medium": "audio-volume-medium",
+    "volume-high": "audio-volume-high",
+    "volume-muted": "audio-volume-muted"
 }
 
 
@@ -113,6 +112,45 @@ def launch_from_row(widget, event, cmd):
     print("Executing '{}'".format(cmd))
     subprocess.Popen('exec {}'.format(cmd), shell=True)
     GLib.timeout_add(50, Gtk.main_quit)
+
+
+class VolumeRow(Gtk.HBox):
+    def __init__(self):
+        Gtk.HBox.__init__(self)
+        vol, icon = self.get_values()
+        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        if pixbuf:
+            self.image = Gtk.Image.new_from_pixbuf(pixbuf)
+            self.pack_start(self.image, False, False, 5)
+
+        self.scale = Gtk.Scale.new_with_range(orientation=Gtk.Orientation.HORIZONTAL, min=0, max=100, step=1)
+        self.scale.connect("value-changed", self.set_volume)
+        self.scale.set_value(vol)
+        self.pack_start(self.scale, True, True, 5)
+        
+    def set_volume(self, widget):
+        vol = self.scale.get_value()
+        set_volume(vol)
+        self.update()
+
+    def update(self):
+        vol, icon = self.get_values()
+        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        if pixbuf:
+            self.image.set_from_pixbuf(pixbuf)
+        self.scale.set_value(vol)
+
+    def get_values(self):
+        print("getting values...")
+        vol = get_volume()
+        if vol > 70:
+            icon = ICONS["volume-high"]
+        elif vol > 30:
+            icon = ICONS["volume-medium"]
+        else:
+            icon = ICONS["volume-low"]
+
+        return vol, icon
 
 
 class CustomRow(Gtk.EventBox):
@@ -225,17 +263,19 @@ class CustomButton(Gtk.Button):
 
 
 class MyWindow(Gtk.Window):
-
     def __init__(self):
         super(MyWindow, self).__init__()
+        self.volume_row = None
         self.battery_row = None
         self.wifi_row = None
         self.bluetooth_row = None
+
         self.init_ui()
 
     def init_ui(self):
         self.set_title("Control Center")
         self.set_default_size(300, 200)
+
         box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=36)
         self.add(box_outer_v)
 
@@ -245,14 +285,8 @@ class MyWindow(Gtk.Window):
         v_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         box_outer_h.pack_start(v_box, True, True, win_padding)
 
-        h_box = Gtk.HBox()
-        pixbuf = create_pixbuf("audio-volume-medium", ICON_SIZE_SMALL)
-        image = Gtk.Image.new_from_pixbuf(pixbuf)
-        h_box.pack_start(image, False, False, 5)
-        h_scale = Gtk.Scale.new_with_range(orientation=Gtk.Orientation.HORIZONTAL, min=0, max=100, step=1)
-        h_scale.set_value(get_volume(mixer))
-        h_box.pack_start(h_scale, True, True, 5)
-        v_box.pack_start(h_box, True, True, 0)
+        self.volume_row = VolumeRow()
+        v_box.pack_start(self.volume_row, True, True, 0)
 
         h_box = CustomRow("{}@{}".format(cmd2string(CLI_COMMANDS["get_user"]), cmd2string(CLI_COMMANDS["get_host"])),
                           icon=ICONS["user"])
@@ -275,7 +309,6 @@ class MyWindow(Gtk.Window):
 
         if CUSTOM_COMMANDS:
             for pos in CUSTOM_COMMANDS:
-                # btn = HorizontalButton(pos["name"], pos["cmd"], pos["icon"])
                 h_box = CustomRow(pos["name"], pos["cmd"], pos["icon"])
                 v_box.pack_start(h_box, False, False, 0)
 
@@ -293,6 +326,7 @@ class MyWindow(Gtk.Window):
 
 
 def refresh_frequently(window):
+    window.volume_row.update()
     window.wifi_row.update()
     window.bluetooth_row.update()
     return True

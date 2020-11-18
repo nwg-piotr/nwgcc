@@ -4,17 +4,28 @@ from pyalsa import alsamixer
 import subprocess
 
 
-def get_volume(mixer, channel="Master"):
+def get_volume(channel="Master"):
+    mixer = alsamixer.Mixer()
+    mixer.attach()
+    mixer.load()
+
     element = alsamixer.Element(mixer, channel)
     max_vol = element.get_volume_range()[1]
+    vol = int(round(element.get_volume() * 100 / max_vol, 0))
+    del mixer
 
-    return int(element.get_volume() * 100 / max_vol)
+    return vol
 
 
-def set_volume(mixer, percent, channel="Master"):
+def set_volume(percent, channel="Master"):
+    mixer = alsamixer.Mixer()
+    mixer.attach()
+    mixer.load()
+
     element = alsamixer.Element(mixer, channel)
     max_vol = element.get_volume_range()[1]
     element.set_volume_all(int(percent * max_vol / 100))
+    del mixer
 
 
 def get_battery(cmd):
