@@ -77,6 +77,7 @@ def get_battery(cmd):
             parts = bat.split()
             msg = " ".join(parts[2:])
             perc_val = int(parts[3].split("%")[0])
+
     return msg, perc_val
 
 
@@ -99,6 +100,7 @@ def bt_service_enabled(commands_dict):
         except subprocess.CalledProcessError:
             # the command above returns the 'disabled` status w/ CalledProcessError, exit status 1
             pass
+
     return result
 
 
@@ -116,10 +118,13 @@ def is_command(cmd, verbose=False):
         if is_cmd:
             if verbose:
                 print("found")
+
             return True
+
     except subprocess.CalledProcessError:
         if verbose:
             print("not found!")
+
         return False
 
 

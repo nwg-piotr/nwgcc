@@ -158,6 +158,44 @@ class VolumeRow(Gtk.HBox):
         return vol, icon
 
 
+class BrightnessRow(Gtk.HBox):
+    def __init__(self):
+        Gtk.HBox.__init__(self)
+        bri, icon = self.get_values()
+        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        if pixbuf:
+            self.image = Gtk.Image.new_from_pixbuf(pixbuf)
+            self.pack_start(self.image, False, False, 5)
+
+        self.scale = Gtk.Scale.new_with_range(orientation=Gtk.Orientation.HORIZONTAL, min=0, max=100, step=1)
+        self.scale.connect("value-changed", self.set_brightness)
+        self.scale.set_value(bri)
+        self.pack_start(self.scale, True, True, 5)
+
+    def set_brightness(self, widget):
+        bri = self.scale.get_value()
+        set_brightness(CLI_COMMANDS["set_brightness"], bri)
+        self.update()
+
+    def update(self):
+        bri, icon = self.get_values()
+        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        if pixbuf:
+            self.image.set_from_pixbuf(pixbuf)
+        self.scale.set_value(bri)
+
+    def get_values(self):
+        bri = get_brightness(CLI_COMMANDS["get_brightness"])
+        if bri > 70:
+            icon = ICONS["brightness-full"]
+        elif bri > 30:
+            icon = ICONS["brightness"]
+        else:
+            icon = ICONS["brightness-low"]
+
+        return bri, icon
+
+
 class CustomRow(Gtk.EventBox):
     def __init__(self, name, cmd="", icon=""):
         Gtk.EventBox.__init__(self)
@@ -270,6 +308,7 @@ class CustomButton(Gtk.Button):
 class MyWindow(Gtk.Window):
     def __init__(self):
         super(MyWindow, self).__init__()
+        self.brightness_row = None
         self.volume_row = None
         self.battery_row = None
         self.wifi_row = None
@@ -290,11 +329,15 @@ class MyWindow(Gtk.Window):
         v_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         box_outer_h.pack_start(v_box, True, True, win_padding)
 
-        print(get_brightness(CLI_COMMANDS["get_brightness"]))
-        set_brightness(CLI_COMMANDS["set_brightness"], 25)
+        if is_command(CLI_COMMANDS["get_brightness"]):
+            self.brightness_row = BrightnessRow()
+            v_box.pack_start(self.brightness_row, True, True, 0)
 
         self.volume_row = VolumeRow()
         v_box.pack_start(self.volume_row, True, True, 0)
+
+        sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        v_box.add(sep)
 
         h_box = CustomRow("{}@{}".format(cmd2string(CLI_COMMANDS["get_user"]), cmd2string(CLI_COMMANDS["get_host"])),
                           icon=ICONS["user"])
@@ -304,7 +347,7 @@ class MyWindow(Gtk.Window):
             self.wifi_row = WifiRow()
             v_box.pack_start(self.wifi_row, True, True, 0)
         
-        if bt_service_enabled(CLI_COMMANDS) and is_command(CLI_COMMANDS["get_bluetooth_status"]):
+        if is_command(CLI_COMMANDS["get_bluetooth_status"]) and bt_service_enabled(CLI_COMMANDS):
             self.bluetooth_row = BluetoothRow()
             v_box.pack_start(self.bluetooth_row, True, True, 0)
 
@@ -334,14 +377,20 @@ class MyWindow(Gtk.Window):
 
 
 def refresh_frequently(window):
-    window.volume_row.update()
-    window.wifi_row.update()
-    window.bluetooth_row.update()
+    if window.brightness_row:
+        window.brightness_row.update()
+    if window.volume_row:
+        window.volume_row.update()
+    if window.wifi_row:
+        window.wifi_row.update()
+    if window.bluetooth_row:
+        window.bluetooth_row.update()
     return True
 
 
 def refresh_rarely(window):
-    window.battery_row.update()
+    if window.battery_row:
+        window.battery_row.update()
     return True
 
 
@@ -372,10 +421,14 @@ def main():
 
     win = MyWindow()
     win.show_all()
-    GLib.timeout_add_seconds(1, refresh_frequently, win)
+
+    # Refresh rows content in various intervals
+    GLib.timeout_add(500, refresh_frequently, win)
     GLib.timeout_add_seconds(5, refresh_rarely, win)
+
     time_current = int(round(time.time() * 1000)) - time_start
     print("Ready in {} ms".format(time_current))
+
     Gtk.main()
 
 
