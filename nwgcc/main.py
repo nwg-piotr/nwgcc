@@ -67,7 +67,7 @@ CLI_COMMANDS: dict = {
 }
 
 ON_CLICK: dict = {
-    "network": "nm-connection-editor",
+    "wifi": "nm-connection-editor",
     "bluetooth": "blueman-manager",
     "battery": ""
 }
@@ -164,6 +164,33 @@ class BatteryRow(CustomRow):
         return name, icon
 
 
+class WifiRow(CustomRow):
+    def __init__(self, cmd=ON_CLICK["wifi"]):
+        name, icon = self.get_values()
+        super().__init__(name, cmd, icon)
+
+    def update(self):
+        name, icon = self.get_values()
+        self.label.set_text(name)
+        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL)
+        self.image.set_from_pixbuf(pixbuf)
+
+    def get_values(self):
+        ssid = ""
+        try:
+            ssid = cmd2string(CLI_COMMANDS["get_ssid"])
+        except:
+            pass
+        if ssid:
+            name = ssid
+            icon=ICONS["wifi-on"]
+        else:
+            name = "Disconnected"
+            icon = ICONS["wifi-off"]
+
+        return name, icon
+
+
 class CustomButton(Gtk.Button):
     def __init__(self, name, cmd, icon):
         Gtk.Button.__init__(self)
@@ -187,11 +214,12 @@ class MyWindow(Gtk.Window):
     def __init__(self):
         super(MyWindow, self).__init__()
         self.battery_row = None
+        self.wifi_row = None
         self.init_ui()
 
     def init_ui(self):
         self.set_title("Control Center")
-        self.set_default_size(200, 200)
+        self.set_default_size(300, 200)
         box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=36)
         self.add(box_outer_v)
 
@@ -215,16 +243,8 @@ class MyWindow(Gtk.Window):
         v_box.pack_start(h_box, True, True, 0)
 
         if is_command(CLI_COMMANDS["get_ssid"].split()[0]):
-            ssid = ""
-            try:
-                ssid = cmd2string(CLI_COMMANDS["get_ssid"])
-            except:
-                pass
-            if ssid:
-                h_box = CustomRow(ssid, icon=ICONS["wifi-on"], cmd=ON_CLICK["network"])
-            else:
-                h_box = CustomRow("Disconnected", icon=ICONS["wifi-off"], cmd=ON_CLICK["network"])
-            v_box.pack_start(h_box, True, True, 0)
+            self.wifi_row = WifiRow()
+            v_box.pack_start(self.wifi_row, True, True, 0)
         
         if bt_service_enabled() and is_command(CLI_COMMANDS["get_bluetooth"].split()[0]):
             if bt_on(CLI_COMMANDS["get_bluetooth"]):
@@ -233,8 +253,9 @@ class MyWindow(Gtk.Window):
                 h_box = CustomRow("Disabled", icon=ICONS["bt-off"], cmd=ON_CLICK["bluetooth"])
             v_box.pack_start(h_box, True, True, 0)
 
-        self.battery_row = BatteryRow()
-        v_box.pack_start(self.battery_row, True, True, 0)
+        if is_command(CLI_COMMANDS["get_battery"].split()[0]) or is_command(CLI_COMMANDS["get_battery_alt"].split()[0]):
+            self.battery_row = BatteryRow()
+            v_box.pack_start(self.battery_row, True, True, 0)
 
         sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
         v_box.add(sep)
@@ -258,7 +279,12 @@ class MyWindow(Gtk.Window):
         self.connect("destroy", Gtk.main_quit)
 
 
-def refresh(window):
+def refresh_frequently(window):
+    window.wifi_row.update()
+    return True
+
+
+def refresh_rarely(window):
     window.battery_row.update()
     return True
 
@@ -285,7 +311,8 @@ def main():
 
     win = MyWindow()
     win.show_all()
-    GLib.timeout_add_seconds(1, refresh, win)
+    GLib.timeout_add_seconds(1, refresh_frequently, win)
+    GLib.timeout_add_seconds(5, refresh_rarely, win)
     Gtk.main()
 
 
