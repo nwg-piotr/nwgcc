@@ -4,16 +4,19 @@
 # Optional: bluez bluez-utils
 # User defined commands: blueman-manager
 
+import time
+time_start = int(round(time.time() * 1000))
 import gi
 import os
 import sys
 import subprocess
+import argparse
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 from pyalsa import alsamixer
 
-from tools import cmd2string, get_volume, set_volume, bt_on, bt_name, bt_service_enabled, get_battery, is_command
+from tools import cmd2string, get_volume, set_volume, bt_on, bt_name, bt_service_enabled, get_battery, is_command, check_all_commands
 
 mixer = alsamixer.Mixer()
 mixer.attach()
@@ -64,7 +67,8 @@ CLI_COMMANDS: dict = {
     "get_battery": "upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\ full|to\\ empty|percentage'",
     "get_battery_alt": "acpi",
     "get_bluetooth_status": "bluetoothctl show | grep Powered",
-    "get_bluetooth_name": "bluetoothctl show | grep Name"
+    "get_bluetooth_name": "bluetoothctl show | grep Name",
+    "systemctl": "systemctl"
 }
 
 ON_CLICK: dict = {
@@ -150,9 +154,9 @@ class BatteryRow(CustomRow):
     def get_values(self):
         name = ""
         perc_val = 0
-        if is_command(CLI_COMMANDS["get_battery"].split()[0]):
+        if is_command(CLI_COMMANDS["get_battery"]):
             name, perc_val = get_battery(CLI_COMMANDS["get_battery"])
-        elif is_command(CLI_COMMANDS["get_battery_alt"].split()[0]):
+        elif is_command(CLI_COMMANDS["get_battery_alt"]):
             name, perc_val = get_battery(CLI_COMMANDS["get_battery_alt"])
         if perc_val > 95:
             icon = ICONS["battery-full"]
@@ -254,15 +258,15 @@ class MyWindow(Gtk.Window):
                           icon=ICONS["user"])
         v_box.pack_start(h_box, True, True, 0)
 
-        if is_command(CLI_COMMANDS["get_ssid"].split()[0]):
+        if is_command(CLI_COMMANDS["get_ssid"]):
             self.wifi_row = WifiRow()
             v_box.pack_start(self.wifi_row, True, True, 0)
         
-        if bt_service_enabled() and is_command(CLI_COMMANDS["get_bluetooth_status"].split()[0]):
+        if bt_service_enabled(CLI_COMMANDS) and is_command(CLI_COMMANDS["get_bluetooth_status"]):
             self.bluetooth_row = BluetoothRow()
             v_box.pack_start(self.bluetooth_row, True, True, 0)
 
-        if is_command(CLI_COMMANDS["get_battery"].split()[0]) or is_command(CLI_COMMANDS["get_battery_alt"].split()[0]):
+        if is_command(CLI_COMMANDS["get_battery"].split()[0]) or is_command(CLI_COMMANDS["get_battery_alt"]):
             self.battery_row = BatteryRow()
             v_box.pack_start(self.battery_row, True, True, 0)
 
@@ -300,13 +304,18 @@ def refresh_rarely(window):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="nwg Control Center")
+    parser.add_argument("-d", "--debug", action="store_true", help="do checks, print results")
+    args = parser.parse_args()
+
+    if args.debug:
+        check_all_commands(CLI_COMMANDS)
+
     screen = Gdk.Screen.get_default()
     provider = Gtk.CssProvider()
     style_context = Gtk.StyleContext()
 
-    style_context.add_provider_for_screen(
-        screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-    )
+    style_context.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
     css = b"""
         #row-normal {
             padding: 2px;
@@ -323,6 +332,8 @@ def main():
     win.show_all()
     GLib.timeout_add_seconds(1, refresh_frequently, win)
     GLib.timeout_add_seconds(5, refresh_rarely, win)
+    time_current = int(round(time.time() * 1000)) - time_start
+    print("Created in {} ms".format(time_current))
     Gtk.main()
 
 

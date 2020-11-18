@@ -64,9 +64,9 @@ def bt_name(cmd):
     return output.split()[1]
 
 
-def bt_service_enabled():
+def bt_service_enabled(commands_dict):
     result = False
-    if is_command("systemctl"):
+    if is_command(commands_dict["systemctl"]):
         try:
             result = subprocess.check_output("systemctl is-enabled bluetooth.service", shell=True).decode(
                 "utf-8").strip() == "enabled"
@@ -80,11 +80,29 @@ def cmd2string(cmd):
     return subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
 
 
-def is_command(cmd):
+def is_command(cmd, verbose=False):
+    cmd = cmd.split()[0]  # strip arguments
+    if verbose:
+        print("  '{}' ".format(cmd), end="")
     cmd = "command -v {}".format(cmd)
     try:
         is_cmd = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
         if is_cmd:
+            if verbose:
+                print("found")
             return True
     except subprocess.CalledProcessError:
+        if verbose:
+            print("not found!")
         return False
+
+
+def check_all_commands(commands_dict):
+    print("Checking commands availability:")
+    commands = []  # some commands may be the same w/ another arguments - let's skip them
+    for key in commands_dict:
+        command = commands_dict[key].split()[0]
+        if command not in commands:
+            commands.append(command)
+    for command in commands:
+        is_command(command, verbose=True)
