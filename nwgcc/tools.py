@@ -51,7 +51,6 @@ def get_battery(cmd):
             parts = bat.split()
             msg = " ".join(parts[2:])
             perc_val = int(parts[3].split("%")[0])
-            print(perc_val)
     return msg, perc_val
 
 
@@ -77,13 +76,10 @@ def cmd2string(cmd):
 
 
 def is_command(cmd):
-    print("Command '{}' ".format(cmd), end="")
     cmd = "command -v {}".format(cmd)
     try:
         is_cmd = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
         if is_cmd:
-            print("found.")
             return True
     except subprocess.CalledProcessError:
-        print("not found!")
         return False

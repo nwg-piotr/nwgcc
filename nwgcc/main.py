@@ -64,12 +64,20 @@ CLI_COMMANDS: dict = {
     "get_battery": "upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\ full|to\\ empty|percentage'",
     "get_battery_alt": "acpi",
     "get_bluetooth": "bluetoothctl show | grep Powered",
+}
+
+ON_CLICK: dict = {
     "network": "nm-connection-editor",
-    "bluetooth": "blueman-manager"
+    "bluetooth": "blueman-manager",
+    "battery": ""
 }
 
 ICONS: dict = {
     "battery": "battery",
+    "battery-empty": "battery-empty",
+    "battery-low": "battery-low",
+    "battery-good": "battery-good",
+    "battery-full": "battery-full",
     "user": "system-users",
     "wifi-on": "network-wireless",
     "wifi-off": "network-wireless-offline",
@@ -78,27 +86,22 @@ ICONS: dict = {
 }
 
 
-def create_image(icon, size):
+def create_pixbuf(icon, size):
     if icon.startswith('/'):
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
-            image = Gtk.Image.new_from_pixbuf(pixbuf)
         except:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(config_dir, 'icon-missing.svg'),
                                                             size, size)
-            image = Gtk.Image.new_from_pixbuf(pixbuf)
     else:
         try:
             if icon.endswith('.svg') or icon.endswith('.png'):
                 icon = icon.split('.')[0]
             pixbuf = icon_theme.load_icon(icon, size, Gtk.IconLookupFlags.FORCE_SIZE)
-            image = Gtk.Image.new_from_pixbuf(pixbuf)
         except:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(config_dir, 'icon-missing.svg'),
                                                             size, size)
-            image = Gtk.Image.new_from_pixbuf(pixbuf)
-
-    return image
+    return pixbuf
 
 
 def launch_from_row(widget, event, cmd):
@@ -108,16 +111,17 @@ def launch_from_row(widget, event, cmd):
 
 
 class CustomRow(Gtk.EventBox):
-    def __init__(self, name, cmd="", icon=None):
+    def __init__(self, name, cmd="", icon=""):
         Gtk.EventBox.__init__(self)
         self.hbox = Gtk.HBox()
         self.hbox.set_property("name", "row-normal")
-        image = create_image(icon, ICON_SIZE_SMALL) if icon else None
-        label = Gtk.Label()
-        label.set_text(name)
-        if image:
-            self.hbox.pack_start(image, False, False, 5)
-        self.hbox.pack_start(label, False, False, 4)
+        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        self.image = Gtk.Image.new_from_pixbuf(pixbuf)
+        self.label = Gtk.Label()
+        self.label.set_text(name)
+        if self.image:
+            self.hbox.pack_start(self.image, False, False, 5)
+        self.hbox.pack_start(self.label, False, False, 4)
         self.add(self.hbox)
         if cmd:
             self.connect('button-press-event', launch_from_row, cmd)
@@ -131,10 +135,40 @@ class CustomRow(Gtk.EventBox):
         self.hbox.set_property("name", "row-normal")
 
 
+class BatteryRow(CustomRow):
+    def __init__(self, cmd=ON_CLICK["battery"]):
+        name, icon = self.get_values()
+        super().__init__(name, cmd, icon)
+
+    def update(self):
+        name, icon = self.get_values()
+        self.label.set_text(name)
+        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL)
+        self.image.set_from_pixbuf(pixbuf)
+
+    def get_values(self):
+        name = ""
+        perc_val = 0
+        if is_command(CLI_COMMANDS["get_battery"].split()[0]):
+            name, perc_val = get_battery(CLI_COMMANDS["get_battery"])
+        elif is_command(CLI_COMMANDS["get_battery_alt"].split()[0]):
+            name, perc_val = get_battery(CLI_COMMANDS["get_battery_alt"])
+        if perc_val > 95:
+            icon = ICONS["battery-full"]
+        elif perc_val > 50:
+            icon = ICONS["battery-good"]
+        elif perc_val > 20:
+            icon = ICONS["battery-low"]
+        else:
+            icon = ICONS["battery-empty"]
+        return name, icon
+
+
 class CustomButton(Gtk.Button):
     def __init__(self, name, cmd, icon):
         Gtk.Button.__init__(self)
-        image = create_image(icon, ICON_SIZE_LARGE)
+        pixbuf = create_pixbuf(icon, ICON_SIZE_LARGE)
+        image = Gtk.Image.new_from_pixbuf(pixbuf)
         self.set_property("name", "button")
         self.set_always_show_image(True)
         self.set_image(image)
@@ -152,7 +186,7 @@ class MyWindow(Gtk.Window):
 
     def __init__(self):
         super(MyWindow, self).__init__()
-
+        self.battery_row = None
         self.init_ui()
 
     def init_ui(self):
@@ -168,7 +202,8 @@ class MyWindow(Gtk.Window):
         box_outer_h.pack_start(v_box, True, True, win_padding)
 
         h_box = Gtk.HBox()
-        image = create_image("audio-volume-medium", ICON_SIZE_SMALL)
+        pixbuf = create_pixbuf("audio-volume-medium", ICON_SIZE_SMALL)
+        image = Gtk.Image.new_from_pixbuf(pixbuf)
         h_box.pack_start(image, False, False, 5)
         h_scale = Gtk.Scale.new_with_range(orientation=Gtk.Orientation.HORIZONTAL, min=0, max=100, step=1)
         h_scale.set_value(get_volume(mixer))
@@ -186,28 +221,20 @@ class MyWindow(Gtk.Window):
             except:
                 pass
             if ssid:
-                h_box = CustomRow(ssid, icon=ICONS["wifi-on"], cmd=CLI_COMMANDS["network"])
+                h_box = CustomRow(ssid, icon=ICONS["wifi-on"], cmd=ON_CLICK["network"])
             else:
-                h_box = CustomRow("Disconnected", icon=ICONS["wifi-off"], cmd=CLI_COMMANDS["network"])
+                h_box = CustomRow("Disconnected", icon=ICONS["wifi-off"], cmd=ON_CLICK["network"])
             v_box.pack_start(h_box, True, True, 0)
         
         if bt_service_enabled() and is_command(CLI_COMMANDS["get_bluetooth"].split()[0]):
             if bt_on(CLI_COMMANDS["get_bluetooth"]):
-                h_box = CustomRow("Enabled", icon=ICONS["bt-on"], cmd=CLI_COMMANDS["bluetooth"])
+                h_box = CustomRow("Enabled", icon=ICONS["bt-on"], cmd=ON_CLICK["bluetooth"])
             else:
-                h_box = CustomRow("Disabled", icon=ICONS["bt-off"], cmd=CLI_COMMANDS["bluetooth"])
+                h_box = CustomRow("Disabled", icon=ICONS["bt-off"], cmd=ON_CLICK["bluetooth"])
             v_box.pack_start(h_box, True, True, 0)
 
-        msg = ""
-        perc_val = 0
-        if is_command(CLI_COMMANDS["get_battery"].split()[0]):
-            msg, perc_val = get_battery(CLI_COMMANDS["get_battery"])
-        elif is_command(CLI_COMMANDS["get_battery_alt"].split()[0]):
-            msg, perc_val = get_battery(CLI_COMMANDS["get_battery_alt"])
-        print(perc_val)
-        if msg:
-            row = CustomRow(msg, icon=ICONS["battery"])
-            v_box.pack_start(row, True, True, 0)
+        self.battery_row = BatteryRow()
+        v_box.pack_start(self.battery_row, True, True, 0)
 
         sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
         v_box.add(sep)
@@ -229,6 +256,11 @@ class MyWindow(Gtk.Window):
             v_box.pack_start(h_box, True, True, 0)
 
         self.connect("destroy", Gtk.main_quit)
+
+
+def refresh(window):
+    window.battery_row.update()
+    return True
 
 
 def main():
@@ -253,6 +285,7 @@ def main():
 
     win = MyWindow()
     win.show_all()
+    GLib.timeout_add_seconds(1, refresh, win)
     Gtk.main()
 
 
