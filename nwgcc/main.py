@@ -15,7 +15,8 @@ import argparse
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
-from tools import cmd2string, get_volume, set_volume, bt_on, bt_name, bt_service_enabled, get_battery, is_command, check_all_commands
+from tools import cmd2string, get_volume, set_volume, get_brightness, set_brightness, bt_on, bt_name, \
+    bt_service_enabled, get_battery, is_command, check_all_commands
 
 ICON_SIZE_SMALL: int = 16
 ICON_SIZE_LARGE: int = 24
@@ -63,6 +64,8 @@ CLI_COMMANDS: dict = {
     "get_battery_alt": "acpi",
     "get_bluetooth_status": "bluetoothctl show | grep Powered",
     "get_bluetooth_name": "bluetoothctl show | grep Name",
+    "get_brightness": "light -G",
+    "set_brightness": "light -S",
     "systemctl": "systemctl"
 }
 
@@ -81,6 +84,9 @@ ICONS: dict = {
     "user": "system-users",
     "wifi-on": "network-wireless",
     "wifi-off": "network-wireless-offline",
+    "brightness-low": "display-brightness",
+    "brightness": "display-brightness",
+    "brightness-full": "display-brightness",
     "bt-on": "bluetooth-active",
     "bt-off": "bluetooth-disabled",
     "volume-low": "audio-volume-low",
@@ -141,7 +147,6 @@ class VolumeRow(Gtk.HBox):
         self.scale.set_value(vol)
 
     def get_values(self):
-        print("getting values...")
         vol = get_volume()
         if vol > 70:
             icon = ICONS["volume-high"]
@@ -285,6 +290,9 @@ class MyWindow(Gtk.Window):
         v_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         box_outer_h.pack_start(v_box, True, True, win_padding)
 
+        print(get_brightness(CLI_COMMANDS["get_brightness"]))
+        set_brightness(CLI_COMMANDS["set_brightness"], 25)
+
         self.volume_row = VolumeRow()
         v_box.pack_start(self.volume_row, True, True, 0)
 
@@ -367,7 +375,7 @@ def main():
     GLib.timeout_add_seconds(1, refresh_frequently, win)
     GLib.timeout_add_seconds(5, refresh_rarely, win)
     time_current = int(round(time.time() * 1000)) - time_start
-    print("Created in {} ms".format(time_current))
+    print("Ready in {} ms".format(time_current))
     Gtk.main()
 
 

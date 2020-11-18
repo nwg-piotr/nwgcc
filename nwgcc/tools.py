@@ -28,6 +28,21 @@ def set_volume(percent, channel="Master"):
     del mixer
 
 
+def get_brightness(cmd):
+    brightness = None
+    output = cmd2string(cmd)
+    try:
+        brightness = int(round(float(output), 0))
+    except:
+        pass
+
+    return brightness
+
+
+def set_brightness(cmd, value):
+    subprocess.call("{} {}".format(cmd, value), shell=True)
+
+
 def get_battery(cmd):
     msg = ""
     perc_val = 0
