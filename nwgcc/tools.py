@@ -59,6 +59,11 @@ def bt_on(cmd):
     return output.split()[1] == "yes"
 
 
+def bt_name(cmd):
+    output = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
+    return output.split()[1]
+
+
 def bt_service_enabled():
     result = False
     if is_command("systemctl"):

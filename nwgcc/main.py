@@ -13,7 +13,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 from pyalsa import alsamixer
 
-from tools import cmd2string, get_volume, set_volume, bt_on, bt_service_enabled, get_battery, is_command
+from tools import cmd2string, get_volume, set_volume, bt_on, bt_name, bt_service_enabled, get_battery, is_command
 
 mixer = alsamixer.Mixer()
 mixer.attach()
@@ -63,7 +63,8 @@ CLI_COMMANDS: dict = {
     "get_ssid": "iwgetid -r",
     "get_battery": "upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\ full|to\\ empty|percentage'",
     "get_battery_alt": "acpi",
-    "get_bluetooth": "bluetoothctl show | grep Powered",
+    "get_bluetooth_status": "bluetoothctl show | grep Powered",
+    "get_bluetooth_name": "bluetoothctl show | grep Name"
 }
 
 ON_CLICK: dict = {
@@ -128,6 +129,12 @@ class CustomRow(Gtk.EventBox):
             self.connect('enter-notify-event', self.on_enter_notify_event)
             self.connect('leave-notify-event', self.on_leave_notify_event)
 
+    def update(self):
+        name, icon = self.get_values()
+        self.label.set_text(name)
+        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL)
+        self.image.set_from_pixbuf(pixbuf)
+
     def on_enter_notify_event(self, widget, event):
         self.hbox.set_property("name", "row-selected")
 
@@ -139,12 +146,6 @@ class BatteryRow(CustomRow):
     def __init__(self, cmd=ON_CLICK["battery"]):
         name, icon = self.get_values()
         super().__init__(name, cmd, icon)
-
-    def update(self):
-        name, icon = self.get_values()
-        self.label.set_text(name)
-        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL)
-        self.image.set_from_pixbuf(pixbuf)
 
     def get_values(self):
         name = ""
@@ -169,12 +170,6 @@ class WifiRow(CustomRow):
         name, icon = self.get_values()
         super().__init__(name, cmd, icon)
 
-    def update(self):
-        name, icon = self.get_values()
-        self.label.set_text(name)
-        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL)
-        self.image.set_from_pixbuf(pixbuf)
-
     def get_values(self):
         ssid = ""
         try:
@@ -185,8 +180,24 @@ class WifiRow(CustomRow):
             name = ssid
             icon=ICONS["wifi-on"]
         else:
-            name = "Disconnected"
+            name = "disconnected"
             icon = ICONS["wifi-off"]
+
+        return name, icon
+
+
+class BluetoothRow(CustomRow):
+    def __init__(self, cmd=ON_CLICK["bluetooth"]):
+        name, icon = self.get_values()
+        super().__init__(name, cmd, icon)
+
+    def get_values(self):
+        if bt_on(CLI_COMMANDS["get_bluetooth_status"]):
+            name = bt_name(CLI_COMMANDS["get_bluetooth_name"])
+            icon=ICONS["bt-on"]
+        else:
+            name = "disabled"
+            icon = ICONS["bt-off"]
 
         return name, icon
 
@@ -215,6 +226,7 @@ class MyWindow(Gtk.Window):
         super(MyWindow, self).__init__()
         self.battery_row = None
         self.wifi_row = None
+        self.bluetooth_row = None
         self.init_ui()
 
     def init_ui(self):
@@ -246,12 +258,9 @@ class MyWindow(Gtk.Window):
             self.wifi_row = WifiRow()
             v_box.pack_start(self.wifi_row, True, True, 0)
         
-        if bt_service_enabled() and is_command(CLI_COMMANDS["get_bluetooth"].split()[0]):
-            if bt_on(CLI_COMMANDS["get_bluetooth"]):
-                h_box = CustomRow("Enabled", icon=ICONS["bt-on"], cmd=ON_CLICK["bluetooth"])
-            else:
-                h_box = CustomRow("Disabled", icon=ICONS["bt-off"], cmd=ON_CLICK["bluetooth"])
-            v_box.pack_start(h_box, True, True, 0)
+        if bt_service_enabled() and is_command(CLI_COMMANDS["get_bluetooth_status"].split()[0]):
+            self.bluetooth_row = BluetoothRow()
+            v_box.pack_start(self.bluetooth_row, True, True, 0)
 
         if is_command(CLI_COMMANDS["get_battery"].split()[0]) or is_command(CLI_COMMANDS["get_battery_alt"].split()[0]):
             self.battery_row = BatteryRow()
@@ -281,6 +290,7 @@ class MyWindow(Gtk.Window):
 
 def refresh_frequently(window):
     window.wifi_row.update()
+    window.bluetooth_row.update()
     return True
 
 
