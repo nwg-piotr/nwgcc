@@ -30,8 +30,7 @@ icon_theme = Gtk.IconTheme.get_default()
 win_padding = 10
 
 CLI_COMMANDS: list = [
-    "a=$(uname -s ; uname -r) ; echo $a",
-    "w=$(curl 'https://wttr.in/Sokołów Podlaski?format=3' -s) ; echo $w"
+    "a=$(uname -s ; uname -r) ; echo $a"
 ]
 
 ICONS: dict = {
@@ -351,6 +350,8 @@ class MyWindow(Gtk.Window):
         self.wifi_row = None
         self.bluetooth_row = None
 
+        self.connect("key-release-event", self.handle_keyboard)
+
         self.init_ui()
 
     def init_ui(self):
@@ -417,6 +418,11 @@ class MyWindow(Gtk.Window):
             v_box.pack_start(h_box, True, True, 0)
 
         self.connect("destroy", Gtk.main_quit)
+
+    def handle_keyboard(self, item, event):
+        if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:
+            Gtk.main_quit()
+        return True
 
 
 def refresh_frequently(window):
