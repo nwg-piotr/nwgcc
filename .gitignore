@@ -2,3 +2,4 @@
 /venv
 /nwgcc.egg-info/
 /build/
+/dist/
