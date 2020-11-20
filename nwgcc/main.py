@@ -2,21 +2,18 @@
 
 # Dependencies: python-pyalsa
 # Optional: bluez bluez-utils
-# User defined commands: blueman-manager
+# For user defined commands: blueman bluez bluez-utils
 
 import time
 time_start = int(round(time.time() * 1000))
 import gi
-import os
 import sys
-import subprocess
 import argparse
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
-from tools import cmd2string, get_volume, set_volume, get_brightness, set_brightness, bt_on, bt_name, \
-    bt_service_enabled, get_battery, is_command, check_all_commands
+from tools import *
 
 ICON_SIZE_SMALL: int = 16
 ICON_SIZE_LARGE: int = 24
@@ -25,84 +22,26 @@ REFRESH_FAST_MILLIS: int = 500
 REFRESH_SLOW_SECONDS: int = 5
 REFRESH_CLI_SECONDS: int = 1800
 
-config_dir = "/home/piotr/.config/sgtk-menu"
+debug = False
+
+dirname = os.path.dirname(__file__)
+config_dir = get_config_dir()
+init_config_files(os.path.join(dirname, "configs"), config_dir)
+
+config_data = load_json(os.path.join(config_dir, "config.json"))
+
+# Init dictionaries from the json file
+ICONS: dict = config_data["icons"]
+COMMANDS: dict = config_data["commands"]
+ON_CLICK: dict = config_data["on_click"]
+CUSTOM_ROWS: dict = config_data["custom_rows"]
+BUTTONS: dict = config_data["buttons"]
+
+# Init user-defined CLI commands list from the plain text file
+CLI_COMMANDS: list = parse_cli_commands(os.path.join(config_dir, "cli_commands"))
+
 icon_theme = Gtk.IconTheme.get_default()
 win_padding = 10
-
-CLI_COMMANDS: list = [
-    "a=$(uname -s ; uname -r) ; echo $a"
-]
-
-ICONS: dict = {
-    "battery": "battery",
-    "battery-empty": "battery-empty",
-    "battery-low": "battery-low",
-    "battery-good": "battery-good",
-    "battery-full": "battery-full",
-    "user": "system-users",
-    "wifi-on": "network-wireless",
-    "wifi-off": "network-wireless-offline",
-    "brightness-low": "display-brightness",
-    "brightness": "display-brightness",
-    "brightness-full": "display-brightness",
-    "bt-on": "bluetooth-active",
-    "bt-off": "bluetooth-disabled",
-    "volume-low": "audio-volume-low",
-    "volume-medium": "audio-volume-medium",
-    "volume-high": "audio-volume-high",
-    "volume-muted": "audio-volume-muted"
-}
-
-COMMANDS: dict = {
-    "get_user": "echo $USER",
-    "get_host": "uname -n",
-    "get_ssid": "iwgetid -r",
-    "get_battery": "upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\ full|to\\ empty|percentage'",
-    "get_battery_alt": "acpi",
-    "get_bluetooth_status": "bluetoothctl show | grep Powered",
-    "get_bluetooth_name": "bluetoothctl show | grep Name",
-    "get_brightness": "light -G",
-    "set_brightness": "light -S",
-    "systemctl": "systemctl"
-}
-
-ON_CLICK: dict = {
-    "user": "",
-    "wifi": "nm-connection-editor",
-    "bluetooth": "blueman-manager",
-    "battery": ""
-}
-
-CUSTOM_ROWS: list = [
-    {
-        "name": "Wayfire Config Manager",
-        "cmd": "wcm > /dev/null 2>&1",
-        "icon": "/opt/wayfire/share/wayfire/icons/wayfire.png"
-    },
-    {
-        "name": "Wallpaper Manager",
-        "cmd": "azote > /dev/null 2>&1",
-        "icon": "/usr/share/azote/indicator_attention.png"
-    },
-    {
-        "name": "Lock screen",
-        "cmd": "swaylock -f -c 000000",
-        "icon": "system-lock-screen"
-    }
-]
-
-BUTTONS: list = [
-    {
-        "name": "Preferences",
-        "cmd": "swaylock -f -c 000000",
-        "icon": "emblem-system"
-    },
-    {
-        "name": "Exit",
-        "cmd": "nwgbar -t exit-wayfire.json -c dock.css -o 0.0",
-        "icon": "application-exit"
-    }
-]
 
 
 def create_pixbuf(icon, size):
@@ -454,8 +393,13 @@ def main():
     parser.add_argument("-d", "--debug", action="store_true", help="do checks, print results")
     args = parser.parse_args()
 
-    if args.debug:
+    global debug
+    debug = args.debug
+
+    if debug:
         check_all_commands(COMMANDS)
+
+    # save_json(config_data, os.path.join(config_dir, "config.json"))
 
     screen = Gdk.Screen.get_default()
     provider = Gtk.CssProvider()

@@ -1,2 +1,5 @@
 /.idea
 /venv
+/nwgcc.egg-info/
+/build/
+

@@ -1,0 +1,68 @@
+{
+  "icons": {
+    "battery": "battery",
+    "battery-empty": "battery-empty",
+    "battery-low": "battery-low",
+    "battery-good": "battery-good",
+    "battery-full": "battery-full",
+    "user": "system-users",
+    "wifi-on": "network-wireless",
+    "wifi-off": "network-wireless-offline",
+    "brightness-low": "display-brightness",
+    "brightness": "display-brightness",
+    "brightness-full": "display-brightness",
+    "bt-on": "bluetooth-active",
+    "bt-off": "bluetooth-disabled",
+    "volume-low": "audio-volume-low",
+    "volume-medium": "audio-volume-medium",
+    "volume-high": "audio-volume-high",
+    "volume-muted": "audio-volume-muted"
+  },
+  "commands": {
+    "get_user": "echo $USER",
+    "get_host": "uname -n",
+    "get_ssid": "iwgetid -r",
+    "get_battery": "upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\ full|to\\ empty|percentage'",
+    "get_battery_alt": "acpi",
+    "get_bluetooth_status": "bluetoothctl show | grep Powered",
+    "get_bluetooth_name": "bluetoothctl show | grep Name",
+    "get_brightness": "light -G",
+    "set_brightness": "light -S",
+    "systemctl": "systemctl"
+  },
+  "on_click": {
+    "user": "",
+    "wifi": "nm-connection-editor",
+    "bluetooth": "blueman-manager",
+    "battery": ""
+  },
+  "custom_rows": [
+    {
+      "name": "Wayfire Config Manager",
+      "cmd": "wcm > /dev/null 2>&1",
+      "icon": "/opt/wayfire/share/wayfire/icons/wayfire.png"
+    },
+    {
+      "name": "Wallpaper Manager",
+      "cmd": "azote > /dev/null 2>&1",
+      "icon": "/usr/share/azote/indicator_attention.png"
+    },
+    {
+      "name": "Lock screen",
+      "cmd": "swaylock -f -c 000000",
+      "icon": "system-lock-screen"
+    }
+  ],
+  "buttons": [
+    {
+      "name": "Preferences",
+      "cmd": "swaylock -f -c 000000",
+      "icon": "emblem-system"
+    },
+    {
+      "name": "Exit",
+      "cmd": "nwgbar -t exit-wayfire.json -c dock.css -o 0.0",
+      "icon": "application-exit"
+    }
+  ]
+}

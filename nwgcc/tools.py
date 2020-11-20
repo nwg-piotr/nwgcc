@@ -1,7 +1,43 @@
 #!/usr/bin/env python3
 
 from pyalsa import alsamixer
+import os
 import subprocess
+import json
+from shutil import copyfile
+
+
+def get_config_dir():
+    """
+    Determine config dir path, create if not found
+    :param debug:
+    :return: config dir path
+    """
+    xdg_config_home = os.getenv('XDG_CONFIG_HOME')
+    config_home = xdg_config_home if xdg_config_home else os.path.join(os.getenv("HOME"), ".config")
+    config_dir = os.path.join(config_home, "nwgcc")
+    if not os.path.isdir(config_dir):
+        print("Couldn't find '{}', creating".format(config_dir))
+        os.mkdir(config_dir)
+
+    return config_dir
+
+
+def init_config_files(src_dir, config_dir):
+    """
+    Copy default config files if not found
+    :param src_dir: resources
+    :param config_dir: ~/.config/nwgcc
+    """
+    file = os.path.join(config_dir, "config.json")
+    if not os.path.isfile(file):
+        print("File '{}' not found, copying default".format(file))
+        copyfile(os.path.join(src_dir, "config.json"), file)
+
+    file = os.path.join(config_dir, "cli_commands")
+    if not os.path.isfile(file):
+        print("File '{}' not found, copying default".format(file))
+        copyfile(os.path.join(src_dir, "cli_commands"), file)
 
 
 def get_volume(channel="Master"):
@@ -137,3 +173,31 @@ def check_all_commands(commands_dict):
             commands.append(command)
     for command in commands:
         is_command(command, verbose=True)
+
+
+def load_json(path):
+    """
+    :param path: patch to a json file
+    :return: dict
+    """
+    try:
+        with open(path, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(e)
+        return {}
+
+
+def save_json(src_dict, path):
+    with open(path, 'w') as f:
+        json.dump(src_dict, f, indent=2)
+
+
+def parse_cli_commands(path):
+    with open(path) as file_in:
+        lines = []
+        for line in file_in:
+            line = line.strip()
+            if line and not line.startswith("#") and not line.startswith("//"):
+                lines.append(line)
+    return lines
