@@ -6,5 +6,5 @@ from gi.repository import Gtk
 
 
 class MyWindow(Gtk.Window):
-    def __init__(self):
+    def __init__(self, preferences):
         super(MyWindow, self).__init__()

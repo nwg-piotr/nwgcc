@@ -30,11 +30,17 @@ copy_files(os.path.join(dirname, "commands"), commands_dir)
 config_data = load_json(os.path.join(config_dir, "config.json"))
 
 # Init dictionaries from ~/.config/nwgcc/config.json
-ICONS: dict = config_data["icons"]
+if "icons" in config_data:
+    ICONS: dict = config_data["icons"]
+else:
+    ICONS = {}
+    print("ERROR: Icons dictionary missing from '{}'".format(os.path.join(config_dir, "config.json")))
+
 if "custom_rows" in config_data:
     CUSTOM_ROWS: dict = config_data["custom_rows"]
 else:
     CUSTOM_ROWS = {}
+
 if "buttons" in config_data:
     BUTTONS: dict = config_data["buttons"]
 else:
