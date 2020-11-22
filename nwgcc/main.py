@@ -17,13 +17,6 @@ from tools import *
 
 ICON_SIZE_SMALL: int = 16
 ICON_SIZE_LARGE: int = 24
-# "light" or "dark"; no value means: use GTK icon name
-ICON_SET: str = "light"
-
-# 0 for no refresh
-REFRESH_FAST_MILLIS: int = 500
-REFRESH_SLOW_SECONDS: int = 5
-REFRESH_CLI_SECONDS: int = 1800
 
 debug = False
 
@@ -52,11 +45,13 @@ else:
 
 del config_data
 
-# Load commands from ~/.local/share/nwgcc/preferences.json
+# Load preferences from ~/.local/share/nwgcc/preferences.json
 # Check the file presence and validity first
 preferences: dict = init_preferences(os.path.join(dirname, "preferences/preferences.json"),
                                os.path.join(data_dir, "preferences.json"))
 
+# Load on-click commands from ~/.local/share/nwgcc/on_click.json
+# Check the file presence and validity first
 ON_CLICK: dict = init_preferences(os.path.join(dirname, "preferences/on_click.json"),
                                os.path.join(data_dir, "on_click.json"))
 
@@ -64,9 +59,9 @@ ON_CLICK: dict = init_preferences(os.path.join(dirname, "preferences/on_click.js
 COMMANDS: dict = load_commands(commands_dir)
 
 icons_path = ""
-if ICON_SET == "light":
+if preferences["icon_set"] == "light":
     icons_path = os.path.join(config_dir, "icons_light")
-elif ICON_SET == "dark":
+elif preferences["icon_set"] == "dark":
     icons_path = os.path.join(config_dir, "icons_dark")
 if icons_path:
     print("Icons path: '{}'".format(icons_path))
@@ -83,16 +78,10 @@ win_padding: int = 10
 
 
 def create_pixbuf(icon, size):
-    path = ""
-    if ICON_SET == "light":
-        path = os.path.join(config_dir, "icons_light")
-    elif ICON_SET == "dark":
-        path = os.path.join(config_dir, "icons_dark")
-
     # full path given
     if icon.startswith('/'):
-        if path:
-            icon = os.path.join(path, icon)
+        if icons_path:
+            icon = os.path.join(icons_path, icon)
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
         except:
@@ -103,8 +92,8 @@ def create_pixbuf(icon, size):
         # In case someone wrote 'name.svg' instead of just 'name' in the "icons" dictionary (config_dir/config.json)
         if icon.endswith(".svg"):
             icon = "".join(icon.split(".")[:-1])
-        if path:
-            icon = os.path.join(path, (icon + ".svg"))
+        if icons_path:
+            icon = os.path.join(icons_path, (icon + ".svg"))
             try:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
             except:
@@ -120,8 +109,11 @@ def create_pixbuf(icon, size):
 
 
 def launch_from_row(widget, event, cmd):
-    print("Executing '{}'".format(cmd))
-    subprocess.Popen('exec {}'.format(cmd), shell=True)
+    if cmd:
+        print("Executing '{}'".format(cmd))
+        subprocess.Popen('exec {}'.format(cmd), shell=True)
+    else:
+        print("No command assigned")
     GLib.timeout_add(50, Gtk.main_quit)
 
 
@@ -335,8 +327,11 @@ class CustomButton(Gtk.Button):
         self.connect("clicked", self.launch, cmd)
 
     def launch(self, widget, cmd):
-        print("Executing '{}'".format(cmd))
-        subprocess.Popen('exec {}'.format(cmd), shell=True)
+        if cmd:
+            print("Executing '{}'".format(cmd))
+            subprocess.Popen('exec {}'.format(cmd), shell=True)
+        else:
+            print("No command assigned")
         GLib.timeout_add(50, Gtk.main_quit)
 
 
@@ -383,40 +378,46 @@ class MyWindow(Gtk.Window):
         v_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         box_outer_h.pack_start(v_box, True, True, win_padding)
 
-        if CLI_COMMANDS:
+        if preferences["show_cli_label"] and CLI_COMMANDS:
             self.cli_label = CliLabel()
             v_box.pack_start(self.cli_label, True, True, 0)
 
             sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
             v_box.add(sep)
 
-        if is_command(COMMANDS["get_brightness"]):
+        if preferences["show_brightness_slider"] and is_command(COMMANDS["get_brightness"]):
             self.brightness_row = BrightnessRow()
             v_box.pack_start(self.brightness_row, True, True, 0)
 
-        self.volume_row = VolumeRow()
-        v_box.pack_start(self.volume_row, True, True, 0)
+        if preferences["show_volume_slider"]:
+            self.volume_row = VolumeRow()
+            v_box.pack_start(self.volume_row, True, True, 0)
 
-        sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
-        v_box.add(sep)
+        if preferences["show_cli_label"] or preferences["show_brightness_slider"] or preferences["show_volume_slider"]:
+            sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+            v_box.add(sep)
 
-        self.user_row = UserRow()
-        v_box.pack_start(self.user_row, True, True, 0)
+        if preferences["show_user_line"]:
+            self.user_row = UserRow()
+            v_box.pack_start(self.user_row, True, True, 0)
 
-        if is_command(COMMANDS["get_ssid"]):
+        if preferences["show_wifi_line"] and is_command(COMMANDS["get_ssid"]):
             self.wifi_row = WifiRow()
             v_box.pack_start(self.wifi_row, True, True, 0)
         
-        if is_command(COMMANDS["get_bluetooth_status"]) and bt_service_enabled(COMMANDS):
+        if preferences["show_bt_line"] and is_command(COMMANDS["get_bluetooth_status"]) and bt_service_enabled(COMMANDS):
             self.bluetooth_row = BluetoothRow()
             v_box.pack_start(self.bluetooth_row, True, True, 0)
 
-        if is_command(COMMANDS["get_battery"].split()[0]) or is_command(COMMANDS["get_battery_alt"]):
+        if preferences["show_battery_line"] and (is_command(COMMANDS["get_battery"].split()[0]) \
+                or is_command(COMMANDS["get_battery_alt"])):
             self.battery_row = BatteryRow()
             v_box.pack_start(self.battery_row, True, True, 0)
 
-        sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
-        v_box.add(sep)
+        if preferences["show_user_line"] or preferences["show_wifi_line"] or preferences["show_bt_line"] \
+                or preferences["show_battery_line"]:
+            sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+            v_box.add(sep)
 
         if CUSTOM_ROWS:
             for pos in CUSTOM_ROWS:
@@ -524,12 +525,12 @@ def main():
     win.show_all()
 
     # Refresh rows content in various intervals
-    if REFRESH_FAST_MILLIS > 0:
-        GLib.timeout_add(REFRESH_FAST_MILLIS, refresh_frequently, win)
-    if REFRESH_SLOW_SECONDS > 0:
-        GLib.timeout_add_seconds(REFRESH_SLOW_SECONDS, refresh_rarely, win)
-    if REFRESH_CLI_SECONDS > 0:
-        GLib.timeout_add_seconds(REFRESH_CLI_SECONDS, refresh_cli, win)
+    if preferences["refresh_fast_millis"] > 0:
+        GLib.timeout_add(preferences["refresh_fast_millis"], refresh_frequently, win)
+    if preferences["refresh_slow_seconds"] > 0:
+        GLib.timeout_add_seconds(preferences["refresh_slow_seconds"], refresh_rarely, win)
+    if preferences["refresh_cli_seconds"] > 0:
+        GLib.timeout_add_seconds(preferences["refresh_cli_seconds"], refresh_cli, win)
 
     time_current = int(round(time.time() * 1000)) - time_start
     print("Ready in {} ms".format(time_current))

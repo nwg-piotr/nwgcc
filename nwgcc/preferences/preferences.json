@@ -6,5 +6,11 @@
   "show_user_line": true,
   "show_wifi_line": true,
   "show_bt_line": true,
-  "show_battery_line": true
+  "show_battery_line": true,
+  "dont_close": false,
+  "icon_size_small": 16,
+  "icon_size_large": 24,
+  "refresh_fast_millis": 500,
+  "refresh_slow_seconds": 5,
+  "refresh_cli_seconds": 1800
 }
