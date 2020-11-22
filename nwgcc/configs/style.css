@@ -1,0 +1,61 @@
+/* Application window */
+#window {
+    background-color: rgba (72, 72, 70, 1.0);
+	/* background-image: url("/home/piotr/.config/nwg-launchers/nwgbar/bricks.png"); */
+	border-radius: 10px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: rgba (248, 132, 97, 1.0)
+}
+
+/* Custom rows */
+#row-normal {
+    padding: 2px;
+    color: #eee
+}
+
+#row-selected {
+    background-color: rgba (248, 132, 97, 1.0);
+    padding: 2px;
+    border-radius: 5px;
+    color: #333
+}
+
+#cli-label {
+    padding: 4px;
+    background-color: rgba (0, 0, 0, 0.2);
+    border-radius: 3px;
+    color: #eee
+}
+
+/* Sliders */
+scale value {
+    color: #eee
+}
+
+scale highlight {
+    background-color: rgba (248, 132, 97, 1.0);
+}
+
+button, image {
+	background: none;
+	border-style: none;
+	box-shadow: none;
+	color: #999
+}
+
+button {
+    background-color: rgba (0, 0, 0, 0.1);
+    border-radius: 7px;
+	padding: 10px;
+	margin: 10px;
+	color: #eee
+}
+
+button:hover {
+	background-color: rgba (248, 132, 97, 1.0);
+}
+
+button:focus {
+	box-shadow: 0 0 2px;
+}

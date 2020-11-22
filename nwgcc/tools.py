@@ -9,18 +9,44 @@ from shutil import copyfile
 
 def get_config_dir():
     """
-    Determine config dir path, create if not found
-    :param debug:
-    :return: config dir path
+    Determine config dir path, create if not found, then create sub-dirs
     """
     xdg_config_home = os.getenv('XDG_CONFIG_HOME')
     config_home = xdg_config_home if xdg_config_home else os.path.join(os.getenv("HOME"), ".config")
     config_dir = os.path.join(config_home, "nwgcc")
     if not os.path.isdir(config_dir):
-        print("Couldn't find '{}', creating".format(config_dir))
+        print("Creating '{}'".format(config_dir))
         os.mkdir(config_dir)
 
+    # Icon folders
+    icon_folder = os.path.join(config_dir, "icons_light")
+    if not os.path.isdir(icon_folder):
+        print("Creating '{}'".format(icon_folder))
+        os.mkdir(icon_folder)
+
+    icon_folder = os.path.join(config_dir, "icons_dark")
+    if not os.path.isdir(os.path.join(config_dir, "icons_dark")):
+        print("Creating '{}'".format(icon_folder))
+        os.mkdir(icon_folder)
+
     return config_dir
+
+
+def get_data_dir():
+    """
+    Determine absolute path to ~/.local/share/nwgcc, create if not found
+    """
+    data_dir = os.path.join(os.getenv("HOME"), ".local/share/nwgcc")
+    if not os.path.isdir(data_dir):
+        print("Creating '{}'".format(data_dir))
+        os.mkdir(data_dir)
+    # dir for txt files containing built-in commands
+    commands_dir = os.path.join(data_dir, "commands")
+    if not os.path.isdir(commands_dir):
+        print("Creating '{}'".format(commands_dir))
+        os.mkdir(commands_dir)
+
+    return data_dir, commands_dir
 
 
 def init_config_files(src_dir, config_dir):
@@ -38,6 +64,19 @@ def init_config_files(src_dir, config_dir):
     if not os.path.isfile(file):
         print("File '{}' not found, copying default".format(file))
         copyfile(os.path.join(src_dir, "cli_commands"), file)
+
+    file = os.path.join(config_dir, "style.css")
+    if not os.path.isfile(file):
+        print("File '{}' not found, copying default".format(file))
+        copyfile(os.path.join(src_dir, "style.css"), file)
+
+
+def copy_files(src_dir, dest_dir):
+    src_files = os.listdir(src_dir)
+    for file in src_files:
+        if not os.path.isfile(os.path.join(dest_dir, file)):
+            copyfile(os.path.join(src_dir, file), os.path.join(dest_dir, file))
+            print("Copying '{}'".format(os.path.join(dest_dir, file)))
 
 
 def get_volume(channel="Master"):
@@ -200,4 +239,20 @@ def parse_cli_commands(path):
             line = line.strip()
             if line and not line.startswith("#") and not line.startswith("//"):
                 lines.append(line)
+        file_in.close()
+
     return lines
+
+
+def load_commands(path):
+    src_files = os.listdir(path)
+    output = {}
+    for file in src_files:
+        pth = os.path.join(path, file)
+        if file != "README":
+            with open(pth, 'r') as p:
+                data = p.read()
+                output[file] = data.splitlines()[0]
+            p.close()
+
+    return output

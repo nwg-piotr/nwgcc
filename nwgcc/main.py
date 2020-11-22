@@ -17,7 +17,10 @@ from tools import *
 
 ICON_SIZE_SMALL: int = 16
 ICON_SIZE_LARGE: int = 24
+# "light" or "dark"; no value means: use GTK icon name
+ICON_SET: str = "light"
 
+# 0 for no refresh
 REFRESH_FAST_MILLIS: int = 500
 REFRESH_SLOW_SECONDS: int = 5
 REFRESH_CLI_SECONDS: int = 1800
@@ -26,38 +29,79 @@ debug = False
 
 dirname = os.path.dirname(__file__)
 config_dir = get_config_dir()
+data_dir, commands_dir = get_data_dir()
+
+# Copy default files if not found
 init_config_files(os.path.join(dirname, "configs"), config_dir)
+copy_files(os.path.join(dirname, "icons_light"), os.path.join(config_dir, "icons_light"))
+copy_files(os.path.join(dirname, "icons_dark"), os.path.join(config_dir, "icons_dark"))
+copy_files(os.path.join(dirname, "commands"), commands_dir)
 
 config_data = load_json(os.path.join(config_dir, "config.json"))
 
-# Init dictionaries from the json file
+# Init dictionaries from ~/.config/nwgcc/config.json
 ICONS: dict = config_data["icons"]
-COMMANDS: dict = config_data["commands"]
 ON_CLICK: dict = config_data["on_click"]
 CUSTOM_ROWS: dict = config_data["custom_rows"]
 BUTTONS: dict = config_data["buttons"]
 
+del config_data
+
+# Load commands from ~/.local/share/nwgcc/commands
+COMMANDS: dict = load_commands(commands_dir)
+
+icons_path = ""
+if ICON_SET == "light":
+    icons_path = os.path.join(config_dir, "icons_light")
+elif ICON_SET == "dark":
+    icons_path = os.path.join(config_dir, "icons_dark")
+if icons_path:
+    print("Icons path: '{}'".format(icons_path))
+else:
+    print("GTK icons in use")
+
+
 # Init user-defined CLI commands list from the plain text file
 CLI_COMMANDS: list = parse_cli_commands(os.path.join(config_dir, "cli_commands"))
 
+custom_styling: bool = True
 icon_theme = Gtk.IconTheme.get_default()
-win_padding = 10
+win_padding: int = 10
 
 
 def create_pixbuf(icon, size):
+    path = ""
+    if ICON_SET == "light":
+        path = os.path.join(config_dir, "icons_light")
+    elif ICON_SET == "dark":
+        path = os.path.join(config_dir, "icons_dark")
+
+    # full path given
     if icon.startswith('/'):
+        if path:
+            icon = os.path.join(path, icon)
         try:
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
         except:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(config_dir, 'icon-missing.svg'),
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(dirname, 'icons_light/icon-missing.svg'),
                                                             size, size)
+    # just name given
     else:
-        try:
-            if icon.endswith('.svg') or icon.endswith('.png'):
-                icon = icon.split('.')[0]
-            pixbuf = icon_theme.load_icon(icon, size, Gtk.IconLookupFlags.FORCE_SIZE)
-        except:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(config_dir, 'icon-missing.svg'),
+        # In case someone wrote 'name.svg' instead of just 'name' in the "icons" dictionary (config_dir/config.json)
+        if icon.endswith(".svg"):
+            icon = "".join(icon.split(".")[:-1])
+        if path:
+            icon = os.path.join(path, (icon + ".svg"))
+            try:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
+            except:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(dirname, 'icons_light/icon-missing.svg'),
+                                                                size, size)
+        else:
+            try:
+                pixbuf = icon_theme.load_icon(icon, size, Gtk.IconLookupFlags.FORCE_SIZE)
+            except:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(config_dir, 'icon-missing.svg'),
                                                             size, size)
     return pixbuf
 
@@ -72,6 +116,7 @@ class CliLabel(Gtk.Label):
     def __init__(self):
         Gtk.Label.__init__(self)
         self.set_justify(Gtk.Justification.CENTER)
+        self.set_property("name", "cli-label")
         self.update()
 
     def update(self):
@@ -86,13 +131,15 @@ class CliLabel(Gtk.Label):
 
 class CustomRow(Gtk.EventBox):
     def __init__(self, name, cmd="", icon=""):
+        self.name = name
+        self.icon = icon
         Gtk.EventBox.__init__(self)
         self.hbox = Gtk.HBox()
         self.hbox.set_property("name", "row-normal")
-        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        pixbuf = create_pixbuf(self.icon, ICON_SIZE_SMALL) if icon else None
         self.image = Gtk.Image.new_from_pixbuf(pixbuf)
         self.label = Gtk.Label()
-        self.label.set_text(name)
+        self.label.set_text(self.name)
         if self.image:
             self.hbox.pack_start(self.image, False, False, 5)
         self.hbox.pack_start(self.label, False, False, 4)
@@ -103,9 +150,9 @@ class CustomRow(Gtk.EventBox):
             self.connect('leave-notify-event', self.on_leave_notify_event)
 
     def update(self):
-        name, icon = self.get_values()
-        self.label.set_text(name)
-        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL)
+        self.name, self.icon = self.get_values()
+        self.label.set_text(self.name)
+        pixbuf = create_pixbuf(self.icon, ICON_SIZE_SMALL) if self.icon else None
         self.image.set_from_pixbuf(pixbuf)
 
     def on_enter_notify_event(self, widget, event):
@@ -251,9 +298,11 @@ class BrightnessRow(Gtk.HBox):
 
     def get_values(self):
         bri = get_brightness(COMMANDS["get_brightness"])
-        if bri > 70:
+        if bri > 90:
             icon = ICONS["brightness-full"]
-        elif bri > 30:
+        elif bri > 50:
+            icon = ICONS["brightness-high"]
+        elif bri > 20:
             icon = ICONS["brightness"]
         else:
             icon = ICONS["brightness-low"]
@@ -266,7 +315,6 @@ class CustomButton(Gtk.Button):
         Gtk.Button.__init__(self)
         pixbuf = create_pixbuf(icon, ICON_SIZE_LARGE)
         image = Gtk.Image.new_from_pixbuf(pixbuf)
-        self.set_property("name", "button")
         self.set_always_show_image(True)
         self.set_image(image)
         self.set_image_position(Gtk.PositionType.TOP)
@@ -288,6 +336,7 @@ class MyWindow(Gtk.Window):
         self.battery_row = None
         self.wifi_row = None
         self.bluetooth_row = None
+        self.set_property("name", "window")
 
         self.connect("key-release-event", self.handle_keyboard)
 
@@ -391,6 +440,8 @@ def refresh_cli(window):
 def main():
     parser = argparse.ArgumentParser(description="nwg Control Center")
     parser.add_argument("-d", "--debug", action="store_true", help="do checks, print results")
+    parser.add_argument("-css", type=str, default="style.css", help="custom css file name")
+
     args = parser.parse_args()
 
     global debug
@@ -399,32 +450,53 @@ def main():
     if debug:
         check_all_commands(COMMANDS)
 
-    # save_json(config_data, os.path.join(config_dir, "config.json"))
-
     screen = Gdk.Screen.get_default()
     provider = Gtk.CssProvider()
     style_context = Gtk.StyleContext()
-
     style_context.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-    css = b"""
-        #row-normal {
-            padding: 2px;
-        }
-        #row-selected {
-            background-color: #eb4d4b;
-            padding: 2px;
-            color: #eee
-        }
-        """
-    provider.load_from_data(css)
+
+    if custom_styling:
+        css_path = os.path.join(config_dir, args.css)
+        try:
+            provider.load_from_path(css_path)
+            print("Custom css: '{}'".format(css_path))
+        except:
+            print("ERROR: couldn't load '{}'".format(css_path))
+            css = b"""
+                #row-normal {
+                    padding: 2px;
+                }
+                #row-selected {
+                    background-color: #eb4d4b;
+                    padding: 2px;
+                    color: #eee
+                }
+                """
+            provider.load_from_data(css)
+    else:
+        print("Custom styling turned off")
+        css = b"""
+                        #row-normal {
+                            padding: 2px;
+                        }
+                        #row-selected {
+                            background-color: #eb4d4b;
+                            padding: 2px;
+                            color: #eee
+                        }
+                        """
+        provider.load_from_data(css)
 
     win = MyWindow()
     win.show_all()
 
     # Refresh rows content in various intervals
-    GLib.timeout_add(REFRESH_FAST_MILLIS, refresh_frequently, win)
-    GLib.timeout_add_seconds(REFRESH_SLOW_SECONDS, refresh_rarely, win)
-    GLib.timeout_add_seconds(REFRESH_CLI_SECONDS, refresh_cli, win)
+    if REFRESH_FAST_MILLIS > 0:
+        GLib.timeout_add(REFRESH_FAST_MILLIS, refresh_frequently, win)
+    if REFRESH_SLOW_SECONDS > 0:
+        GLib.timeout_add_seconds(REFRESH_SLOW_SECONDS, refresh_rarely, win)
+    if REFRESH_CLI_SECONDS > 0:
+        GLib.timeout_add_seconds(REFRESH_CLI_SECONDS, refresh_cli, win)
 
     time_current = int(round(time.time() * 1000)) - time_start
     print("Ready in {} ms".format(time_current))

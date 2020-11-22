@@ -1,0 +1,60 @@
+MODIFY CAREFULLY, IF AT ALL!
+
+These files represent CLI commands with arguments, used by the program.
+The output of some of them is being parsed in a specific way, so changing the result is more than likely
+to give unexpected results, or even crash the program.
+
+DO NOT change them unless you REALLY need to (e.g. to use `egrep` instead of `grep`).
+In case you did something wrong, just delete the file. It'll be re-created on next run.
+
+Sample expected output:
+
+get_battery:
+
+$ upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\ full|to\\ empty|percentage'
+    state:               fully-charged
+    percentage:          100%
+
+get_battery_alt:
+
+$ acpi
+Battery 0: Full, 100%
+
+get_bluetooth_name:
+
+$ bluetoothctl show | grep Name
+	Name: msi
+
+get_bluetooth_status:
+
+$ bluetoothctl show | grep Powered
+	Powered: no
+
+get_brightness:
+
+$ light -G
+25.88
+
+get_host:
+
+$ uname -n
+msi
+
+get_ssid
+
+$ iwgetid -r
+Zhone_CE44
+
+get_user:
+
+$ echo $USER
+piotr
+
+set_brightness:
+
+$ light -S <nwgcc_appends_a_value>
+
+systemctl:
+
+Used to check if systemctl is present in the system.
+
