@@ -198,13 +198,13 @@ class BatteryRow(CustomRow):
         elif is_command(COMMANDS["get_battery_alt"]):
             name, perc_val = get_battery(COMMANDS["get_battery_alt"])
         if perc_val > 95:
-            icon = ICONS["battery-full"]
+            icon = ICONS["battery-full"] if "battery-full" in ICONS else "icon-missing"
         elif perc_val > 50:
-            icon = ICONS["battery-good"]
+            icon = ICONS["battery-good"] if "battery-good" in ICONS else "icon-missing"
         elif perc_val > 20:
-            icon = ICONS["battery-low"]
+            icon = ICONS["battery-low"] if "battery-low" in ICONS else "icon-missing"
         else:
-            icon = ICONS["battery-empty"]
+            icon = ICONS["battery-empty"] if "battery-empty" in ICONS else "icon-missing"
         return name, icon
 
 
@@ -221,10 +221,10 @@ class WifiRow(CustomRow):
             pass
         if ssid:
             name = ssid
-            icon=ICONS["wifi-on"]
+            icon=ICONS["wifi-on"] if "wifi-on" in ICONS else "icon-missing"
         else:
             name = "disconnected"
-            icon = ICONS["wifi-off"]
+            icon = ICONS["wifi-off"] if "wifi-off" in ICONS else "icon-missing"
 
         return name, icon
 
@@ -237,10 +237,10 @@ class BluetoothRow(CustomRow):
     def get_values(self):
         if bt_on(COMMANDS["get_bluetooth_status"]):
             name = bt_name(COMMANDS["get_bluetooth_name"])
-            icon=ICONS["bt-on"]
+            icon=ICONS["bt-on"] if "bt-on" in ICONS else "icon-missing"
         else:
             name = "disabled"
-            icon = ICONS["bt-off"]
+            icon = ICONS["bt-off"] if "bt-off" in ICONS else "icon-missing"
 
         return name, icon
 
@@ -274,11 +274,11 @@ class VolumeRow(Gtk.HBox):
     def get_values(self):
         vol = get_volume()
         if vol > 70:
-            icon = ICONS["volume-high"]
+            icon = ICONS["volume-high"] if "volume-high" in ICONS else "icon-missing"
         elif vol > 30:
-            icon = ICONS["volume-medium"]
+            icon = ICONS["volume-medium"] if "volume-medium" in ICONS else "icon-missing"
         else:
-            icon = ICONS["volume-low"]
+            icon = ICONS["volume-low"] if "volume-low" in ICONS else "icon-missing"
 
         return vol, icon
 
@@ -312,13 +312,13 @@ class BrightnessRow(Gtk.HBox):
     def get_values(self):
         bri = get_brightness(COMMANDS["get_brightness"])
         if bri > 90:
-            icon = ICONS["brightness-full"]
+            icon = ICONS["brightness-full"] if "brightness-full" in ICONS else "icon-missing"
         elif bri > 50:
-            icon = ICONS["brightness-high"]
+            icon = ICONS["brightness-high"] if "brightness-high" in ICONS else "icon-missing"
         elif bri > 20:
-            icon = ICONS["brightness"]
+            icon = ICONS["brightness"] if "brightness" in ICONS else "icon-missing"
         else:
-            icon = ICONS["brightness-low"]
+            icon = ICONS["brightness-low"] if "brightness-low" in ICONS else "icon-missing"
 
         return bri, icon
 
