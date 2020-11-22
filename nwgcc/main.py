@@ -109,11 +109,8 @@ def create_pixbuf(icon, size):
 
 
 def launch_from_row(widget, event, cmd):
-    if cmd:
-        print("Executing '{}'".format(cmd))
-        subprocess.Popen('exec {}'.format(cmd), shell=True)
-    else:
-        print("No command assigned")
+    print("Executing '{}'".format(cmd))
+    subprocess.Popen('exec {}'.format(cmd), shell=True)
     GLib.timeout_add(50, Gtk.main_quit)
 
 
