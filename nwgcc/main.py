@@ -15,9 +15,6 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
 from tools import *
 
-ICON_SIZE_SMALL: int = 16
-ICON_SIZE_LARGE: int = 24
-
 debug = False
 
 dirname = os.path.dirname(__file__)
@@ -138,7 +135,7 @@ class CustomRow(Gtk.EventBox):
         Gtk.EventBox.__init__(self)
         self.hbox = Gtk.HBox()
         self.hbox.set_property("name", "row-normal")
-        pixbuf = create_pixbuf(self.icon, ICON_SIZE_SMALL) if icon else None
+        pixbuf = create_pixbuf(self.icon, preferences["icon_size_small"]) if icon else None
         self.image = Gtk.Image.new_from_pixbuf(pixbuf)
         self.label = Gtk.Label()
         self.label.set_text(self.name)
@@ -154,7 +151,7 @@ class CustomRow(Gtk.EventBox):
     def update(self):
         self.name, self.icon = self.get_values()
         self.label.set_text(self.name)
-        pixbuf = create_pixbuf(self.icon, ICON_SIZE_SMALL) if self.icon else None
+        pixbuf = create_pixbuf(self.icon, preferences["icon_size_small"]) if self.icon else None
         self.image.set_from_pixbuf(pixbuf)
 
     def on_enter_notify_event(self, widget, event):
@@ -165,7 +162,8 @@ class CustomRow(Gtk.EventBox):
 
 
 class UserRow(CustomRow):
-    def __init__(self, cmd=ON_CLICK["user"], icon=ICONS["user"]):
+    def __init__(self, cmd=ON_CLICK["user"]):
+        icon = ICONS["user"] if "user" in ICONS else ""
         name = "{}@{}".format(cmd2string(COMMANDS["get_user"]), cmd2string(COMMANDS["get_host"]))
         super().__init__(name, cmd, icon)
 
@@ -238,7 +236,7 @@ class VolumeRow(Gtk.HBox):
     def __init__(self):
         Gtk.HBox.__init__(self)
         vol, icon = self.get_values()
-        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
         if pixbuf:
             self.image = Gtk.Image.new_from_pixbuf(pixbuf)
             self.pack_start(self.image, False, False, 5)
@@ -255,7 +253,7 @@ class VolumeRow(Gtk.HBox):
 
     def update(self):
         vol, icon = self.get_values()
-        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
         if pixbuf:
             self.image.set_from_pixbuf(pixbuf)
         self.scale.set_value(vol)
@@ -276,7 +274,7 @@ class BrightnessRow(Gtk.HBox):
     def __init__(self):
         Gtk.HBox.__init__(self)
         bri, icon = self.get_values()
-        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
         if pixbuf:
             self.image = Gtk.Image.new_from_pixbuf(pixbuf)
             self.pack_start(self.image, False, False, 5)
@@ -293,7 +291,7 @@ class BrightnessRow(Gtk.HBox):
 
     def update(self):
         bri, icon = self.get_values()
-        pixbuf = create_pixbuf(icon, ICON_SIZE_SMALL) if icon else None
+        pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
         if pixbuf:
             self.image.set_from_pixbuf(pixbuf)
         self.scale.set_value(bri)
@@ -315,7 +313,7 @@ class BrightnessRow(Gtk.HBox):
 class CustomButton(Gtk.Button):
     def __init__(self, name, cmd, icon):
         Gtk.Button.__init__(self)
-        pixbuf = create_pixbuf(icon, ICON_SIZE_LARGE)
+        pixbuf = create_pixbuf(icon, preferences["icon_size_large"])
         image = Gtk.Image.new_from_pixbuf(pixbuf)
         self.set_always_show_image(True)
         self.set_image(image)
@@ -335,7 +333,7 @@ class CustomButton(Gtk.Button):
 class PreferencesButton(CustomButton):
     def __init__(self):
         Gtk.Button.__init__(self)
-        pixbuf = create_pixbuf("emblem-system", ICON_SIZE_LARGE)
+        pixbuf = create_pixbuf("emblem-system", preferences["icon_size_large"])
         image = Gtk.Image.new_from_pixbuf(pixbuf)
         self.set_always_show_image(True)
         self.set_image(image)
