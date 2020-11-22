@@ -41,8 +41,14 @@ config_data = load_json(os.path.join(config_dir, "config.json"))
 
 # Init dictionaries from ~/.config/nwgcc/config.json
 ICONS: dict = config_data["icons"]
-CUSTOM_ROWS: dict = config_data["custom_rows"]
-BUTTONS: dict = config_data["buttons"]
+if "custom_rows" in config_data:
+    CUSTOM_ROWS: dict = config_data["custom_rows"]
+else:
+    CUSTOM_ROWS = {}
+if "buttons" in config_data:
+    BUTTONS: dict = config_data["buttons"]
+else:
+    BUTTONS = {}
 
 del config_data
 
@@ -334,6 +340,21 @@ class CustomButton(Gtk.Button):
         GLib.timeout_add(50, Gtk.main_quit)
 
 
+class PreferencesButton(CustomButton):
+    def __init__(self):
+        Gtk.Button.__init__(self)
+        pixbuf = create_pixbuf("emblem-system", ICON_SIZE_LARGE)
+        image = Gtk.Image.new_from_pixbuf(pixbuf)
+        self.set_always_show_image(True)
+        self.set_image(image)
+        self.set_image_position(Gtk.PositionType.TOP)
+        self.set_tooltip_text("Preferences")
+        self.connect("clicked", self.launch)
+
+    def launch(self, widget):
+        print("Preferences button clicked")
+
+
 class MyWindow(Gtk.Window):
     def __init__(self):
         super(MyWindow, self).__init__()
@@ -405,12 +426,17 @@ class MyWindow(Gtk.Window):
             sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
             v_box.add(sep)
 
+        h_box = Gtk.HBox()
+        # fixed Preferences button
+        btn = PreferencesButton()
+        h_box.pack_start(btn, True, False, 4)
         if BUTTONS:
-            h_box = Gtk.HBox()
-            for pos in BUTTONS:
-                btn = CustomButton(pos["name"], cmd=pos["cmd"], icon=pos["icon"])
-                h_box.pack_start(btn, True, False, 4)
-            v_box.pack_start(h_box, True, True, 0)
+            # user-defined buttons
+            if BUTTONS:
+                for pos in BUTTONS:
+                    btn = CustomButton(pos["name"], cmd=pos["cmd"], icon=pos["icon"])
+                    h_box.pack_start(btn, True, False, 4)
+        v_box.pack_start(h_box, True, True, 0)
 
         self.connect("destroy", Gtk.main_quit)
 

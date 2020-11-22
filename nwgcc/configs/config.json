@@ -37,11 +37,6 @@
   ],
   "buttons": [
     {
-      "name": "Preferences",
-      "cmd": "swaylock -f -c 000000",
-      "icon": "/home/piotr/PycharmProjects/nwgcc/nwgcc/icons_light/emblem-system.svg"
-    },
-    {
       "name": "Exit",
       "cmd": "nwgbar -t exit-wayfire.json -c dock.css -o 0.0",
       "icon": "application-exit"
