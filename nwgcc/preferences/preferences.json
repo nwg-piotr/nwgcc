@@ -1,0 +1,10 @@
+{
+  "icon_set": "light",
+  "show_cli_label": true,
+  "show_brightness_slider": true,
+  "show_volume_slider": true,
+  "show_user_line": true,
+  "show_wifi_line": true,
+  "show_bt_line": true,
+  "show_battery_line": true
+}

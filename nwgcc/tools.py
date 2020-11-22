@@ -71,6 +71,30 @@ def init_config_files(src_dir, config_dir):
         copyfile(os.path.join(src_dir, "style.css"), file)
 
 
+def init_preferences(src_file, dest_file):
+    # copy default file if not found
+    if not os.path.isfile(dest_file):
+        copyfile(src_file, dest_file)
+    # check for new keys, add to user's preferences if found
+    else:
+        users = load_json(dest_file)
+        default = load_json(src_file)
+        if set(users.keys()) != set(default.keys()):
+            users.update(default)
+            save_json(users, dest_file)
+            to_delete = []
+            for key in users:
+                if key not in default.keys():
+                    to_delete.append(key)
+            # in case some key is no longer used: delete from the users preferences
+            if to_delete:
+                for key in to_delete:
+                    users.pop(key)
+                save_json(users, dest_file)
+
+    return load_json(dest_file)
+
+
 def copy_files(src_dir, dest_dir):
     src_files = os.listdir(src_dir)
     for file in src_files:

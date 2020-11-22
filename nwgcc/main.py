@@ -47,6 +47,9 @@ BUTTONS: dict = config_data["buttons"]
 
 del config_data
 
+preferences: dict = init_preferences(os.path.join(dirname, "preferences/preferences.json"),
+                               os.path.join(data_dir, "preferences.json"))
+
 # Load commands from ~/.local/share/nwgcc/commands
 COMMANDS: dict = load_commands(commands_dir)
 
