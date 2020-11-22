@@ -14,6 +14,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
 from tools import *
+from preferences import PreferencesWindow
 
 debug = False
 
@@ -75,9 +76,9 @@ else:
 # Init user-defined CLI commands list from the plain text file
 CLI_COMMANDS: list = parse_cli_commands(os.path.join(config_dir, "cli_commands"))
 
-custom_styling: bool = True
 icon_theme = Gtk.IconTheme.get_default()
-win_padding: int = 10
+
+win = None
 
 
 def create_pixbuf(icon, size):
@@ -349,6 +350,9 @@ class PreferencesButton(CustomButton):
 
     def launch(self, widget):
         print("Preferences button clicked")
+        preferences_window = PreferencesWindow(preferences)
+        preferences_window.set_transient_for(win)
+        preferences_window.show()
 
 
 class MyWindow(Gtk.Window):
@@ -374,10 +378,10 @@ class MyWindow(Gtk.Window):
         self.add(box_outer_v)
 
         box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=36)
-        box_outer_v.pack_start(box_outer_h, False, False, win_padding)
+        box_outer_v.pack_start(box_outer_h, False, False, 10)
 
         v_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        box_outer_h.pack_start(v_box, True, True, win_padding)
+        box_outer_h.pack_start(v_box, True, True, 10)
 
         if preferences["show_cli_label"] and CLI_COMMANDS:
             self.cli_label = CliLabel()
@@ -490,7 +494,7 @@ def main():
     style_context = Gtk.StyleContext()
     style_context.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-    if custom_styling:
+    if preferences["custom_styling"]:
         css_path = os.path.join(config_dir, args.css)
         try:
             provider.load_from_path(css_path)
@@ -522,6 +526,7 @@ def main():
                         """
         provider.load_from_data(css)
 
+    global win
     win = MyWindow()
     win.show_all()
 

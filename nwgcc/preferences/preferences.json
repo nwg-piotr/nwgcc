@@ -1,5 +1,6 @@
 {
   "icon_set": "light",
+  "custom_styling": true,
   "show_cli_label": true,
   "show_brightness_slider": true,
   "show_volume_slider": true,
