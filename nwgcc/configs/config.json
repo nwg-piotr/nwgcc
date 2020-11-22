@@ -18,12 +18,6 @@
     "volume-high": "audio-volume-high",
     "volume-muted": "audio-volume-muted"
   },
-  "on_click": {
-    "user": "",
-    "wifi": "nm-connection-editor",
-    "bluetooth": "blueman-manager",
-    "battery": ""
-  },
   "custom_rows": [
     {
       "name": "Wayfire Config Manager",

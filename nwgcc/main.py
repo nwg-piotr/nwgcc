@@ -41,16 +41,20 @@ config_data = load_json(os.path.join(config_dir, "config.json"))
 
 # Init dictionaries from ~/.config/nwgcc/config.json
 ICONS: dict = config_data["icons"]
-ON_CLICK: dict = config_data["on_click"]
 CUSTOM_ROWS: dict = config_data["custom_rows"]
 BUTTONS: dict = config_data["buttons"]
 
 del config_data
 
+# Load commands from ~/.local/share/nwgcc/preferences.json
+# Check the file presence and validity first
 preferences: dict = init_preferences(os.path.join(dirname, "preferences/preferences.json"),
                                os.path.join(data_dir, "preferences.json"))
 
-# Load commands from ~/.local/share/nwgcc/commands
+ON_CLICK: dict = init_preferences(os.path.join(dirname, "preferences/on_click.json"),
+                               os.path.join(data_dir, "on_click.json"))
+
+# Load commands from ~/.local/share/nwgcc/commands/
 COMMANDS: dict = load_commands(commands_dir)
 
 icons_path = ""
