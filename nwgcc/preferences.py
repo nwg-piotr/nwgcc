@@ -46,15 +46,26 @@ class PreferencesWindow(Gtk.Window):
         icon_set_combo.connect("changed", self.on_icon_set_changed)
         v_box.pack_start(icon_set_combo, False, False, 0)
 
+        hbox = Gtk.HBox()
+
+        cancel_button = Gtk.Button.new_with_label("Cancel")
+        cancel_button.connect("clicked", self.on_cancel_button)
+        hbox.pack_start(cancel_button, True, True, 0)
+
         apply_button = Gtk.Button.new_with_label("Apply")
         apply_button.connect("clicked", self.on_apply_button)
-        v_box.pack_start(apply_button, False, False, 0)
+        hbox.pack_start(apply_button, True, True, 0)
+
+        v_box.pack_start(hbox, False, False, 0)
 
         self.show_all()
 
     def on_icon_set_changed(self, combo):
         print(combo.get_active_id())
         self.preferences["icon_set"] = combo.get_active_id()
+
+    def on_cancel_button(self, button):
+        self.close()
 
     def on_apply_button(self, button):
         save_json(self.preferences, self.preferences_file)
