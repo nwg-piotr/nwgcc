@@ -22,7 +22,6 @@ class PreferencesWindow(Gtk.Window):
 
     def init_ui(self):
         self.set_title("Preferences")
-        self.set_default_size(400, 200)
 
         box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=36)
         self.add(box_outer_v)
@@ -32,6 +31,10 @@ class PreferencesWindow(Gtk.Window):
 
         v_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         box_outer_h.pack_start(v_box, True, True, 10)
+
+        grid = Gtk.Grid()
+        grid.set_column_spacing(10)
+        grid.set_row_spacing(10)
 
         icon_set_combo = Gtk.ComboBoxText()
         icon_set_combo.append("light", "Light icons")
@@ -44,25 +47,30 @@ class PreferencesWindow(Gtk.Window):
         elif self.preferences["icon_set"] == "gtk":
             icon_set_combo.set_active_id("gtk")
         icon_set_combo.connect("changed", self.on_icon_set_changed)
-        v_box.pack_start(icon_set_combo, False, False, 0)
+        grid.attach(icon_set_combo, 0, 0, 1, 1)
 
-        hbox = Gtk.HBox()
+        css_checkbutton = Gtk.CheckButton.new_with_label("Use custom css")
+        css_checkbutton.set_active(self.preferences["custom_styling"])
+        css_checkbutton.connect("toggled", self.on_css_toggled)
+        grid.attach(css_checkbutton, 1, 0, 1, 1)
 
         cancel_button = Gtk.Button.new_with_label("Cancel")
         cancel_button.connect("clicked", self.on_cancel_button)
-        hbox.pack_start(cancel_button, True, True, 0)
+        grid.attach(cancel_button, 0, 1, 1, 1)
 
         apply_button = Gtk.Button.new_with_label("Apply")
         apply_button.connect("clicked", self.on_apply_button)
-        hbox.pack_start(apply_button, True, True, 0)
+        grid.attach(apply_button, 1, 1, 1, 1)
 
-        v_box.pack_start(hbox, False, False, 0)
+        v_box.pack_start(grid, True, True, 10)
 
         self.show_all()
 
     def on_icon_set_changed(self, combo):
-        print(combo.get_active_id())
         self.preferences["icon_set"] = combo.get_active_id()
+
+    def on_css_toggled(self, checkbutton):
+        self.preferences["custom_styling"] = checkbutton.get_active()
 
     def on_cancel_button(self, button):
         self.close()
