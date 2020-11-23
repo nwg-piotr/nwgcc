@@ -349,8 +349,7 @@ class PreferencesButton(CustomButton):
         self.connect("clicked", self.launch)
 
     def launch(self, widget):
-        print("Preferences button clicked")
-        preferences_window = PreferencesWindow(preferences)
+        preferences_window = PreferencesWindow(preferences, os.path.join(data_dir, "preferences.json"))
         preferences_window.set_transient_for(win)
         preferences_window.show()
 

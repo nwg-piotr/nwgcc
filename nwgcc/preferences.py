@@ -2,14 +2,15 @@
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib
 
 from tools import save_json
 
 
 class PreferencesWindow(Gtk.Window):
-    def __init__(self, preferences):
+    def __init__(self, preferences, preferences_file):
         self.preferences = preferences
+        self.preferences_file = preferences_file
         super(PreferencesWindow, self).__init__()
         self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.set_modal(True)
@@ -32,11 +33,32 @@ class PreferencesWindow(Gtk.Window):
         v_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         box_outer_h.pack_start(v_box, True, True, 10)
 
-        label = Gtk.Label()
-        label.set_text(self.preferences["icon_set"])
-        v_box.pack_start(label, True, True, 0)
+        icon_set_combo = Gtk.ComboBoxText()
+        icon_set_combo.append("light", "Light icons")
+        icon_set_combo.append("dark", "Dark icons")
+        icon_set_combo.append("gtk", "GTK icons")
+        if self.preferences["icon_set"] == "light":
+            icon_set_combo.set_active_id("light")
+        elif self.preferences["icon_set"] == "dark":
+            icon_set_combo.set_active_id("dark")
+        elif self.preferences["icon_set"] == "gtk":
+            icon_set_combo.set_active_id("gtk")
+        icon_set_combo.connect("changed", self.on_icon_set_changed)
+        v_box.pack_start(icon_set_combo, False, False, 0)
+
+        apply_button = Gtk.Button.new_with_label("Apply")
+        apply_button.connect("clicked", self.on_apply_button)
+        v_box.pack_start(apply_button, False, False, 0)
 
         self.show_all()
+
+    def on_icon_set_changed(self, combo):
+        print(combo.get_active_id())
+        self.preferences["icon_set"] = combo.get_active_id()
+
+    def on_apply_button(self, button):
+        save_json(self.preferences, self.preferences_file)
+        GLib.timeout_add(0, Gtk.main_quit)
 
     def handle_keyboard(self, item, event):
         if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:
