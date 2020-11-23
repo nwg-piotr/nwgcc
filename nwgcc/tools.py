@@ -268,6 +268,15 @@ def parse_cli_commands(path):
     return lines
 
 
+def preview_cli_commands(path):
+    try:
+        with open(path, 'r') as file:
+            data = file.read()
+            return(data)
+    except:
+        return "Error reading file"
+
+
 def load_commands(path):
     src_files = os.listdir(path)
     output = {}
