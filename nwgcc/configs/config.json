@@ -4,7 +4,7 @@
     "battery-low": "battery-low",
     "battery-good": "battery-good",
     "battery-full": "battery-full",
-    "user": "user-available",
+    "user": "user-info",
     "wifi-on": "network-wireless",
     "wifi-off": "network-wireless-offline",
     "brightness-low": "display-brightness-low",

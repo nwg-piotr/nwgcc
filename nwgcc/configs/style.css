@@ -8,6 +8,11 @@
 	border-color: rgba (248, 132, 97, 1.0)
 }
 
+/* Preferences window */
+#preferences {
+    background-color: rgba (50, 50, 50, 1.0)
+}
+
 /* Custom rows */
 #row-normal {
     padding: 2px;
@@ -23,7 +28,6 @@
 
 #cli-label {
     padding: 4px;
-    background-color: rgba (0, 0, 0, 0.2);
     border-radius: 3px;
     color: #eee
 }
@@ -39,7 +43,6 @@ scale highlight {
 
 button, image {
 	background: none;
-	border-style: none;
 	box-shadow: none;
 	color: #999
 }
@@ -47,6 +50,8 @@ button, image {
 button {
     background-color: rgba (0, 0, 0, 0.1);
     border-radius: 7px;
+    border-style: solid;
+    border-color: rgba (248, 132, 97, 0.7);
 	padding: 10px;
 	margin: 10px;
 	color: #eee
@@ -56,6 +61,6 @@ button:hover {
 	background-color: rgba (248, 132, 97, 1.0);
 }
 
-button:focus {
-	box-shadow: 0 0 2px;
+menu {
+    background-color: rgba (72, 72, 70, 1.0)
 }
