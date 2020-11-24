@@ -4,7 +4,7 @@ nwg Control Center is a GTK-based GUI, intended for use with window managers. It
 
 This is a work in progress, not yet production ready.
 
-Main window:
+Main window, custom styling:
 
 ![gui.png](https://scrot.cloud/images/2020/11/24/gui.png)
 
