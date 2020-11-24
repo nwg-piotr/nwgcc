@@ -256,6 +256,15 @@ def save_json(src_dict, path):
         json.dump(src_dict, f, indent=2)
 
 
+def save_string(string, file):
+    try:
+        file = open(file, "wt")
+        file.write(string)
+        file.close()
+    except:
+        print("Error writing file '{}'".format(file))
+
+
 def parse_cli_commands(path):
     with open(path) as file_in:
         lines = []
@@ -268,7 +277,7 @@ def parse_cli_commands(path):
     return lines
 
 
-def preview_cli_commands(path):
+def load_cli_commands(path):
     try:
         with open(path, 'r') as file:
             data = file.read()

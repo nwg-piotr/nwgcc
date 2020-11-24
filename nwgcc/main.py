@@ -107,7 +107,7 @@ def create_pixbuf(icon, size):
             try:
                 pixbuf = icon_theme.load_icon(icon, size, Gtk.IconLookupFlags.FORCE_SIZE)
             except:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(config_dir, 'icon-missing.svg'),
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(dirname, 'icons_light/icon-missing.svg'),
                                                             size, size)
     return pixbuf
 
@@ -115,7 +115,8 @@ def create_pixbuf(icon, size):
 def launch_from_row(widget, event, cmd):
     print("Executing '{}'".format(cmd))
     subprocess.Popen('exec {}'.format(cmd), shell=True)
-    GLib.timeout_add(50, Gtk.main_quit)
+    if not preferences["dont_close"]:
+        GLib.timeout_add(50, Gtk.main_quit)
 
 
 class CliLabel(Gtk.Label):
@@ -334,7 +335,8 @@ class CustomButton(Gtk.Button):
             subprocess.Popen('exec {}'.format(cmd), shell=True)
         else:
             print("No command assigned")
-        GLib.timeout_add(50, Gtk.main_quit)
+        if not preferences["dont_close"]:
+            GLib.timeout_add(50, Gtk.main_quit)
 
 
 class PreferencesButton(CustomButton):
@@ -425,7 +427,7 @@ class MyWindow(Gtk.Window):
             sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
             v_box.add(sep)
 
-        if CUSTOM_ROWS:
+        if preferences["show_user_rows"] and CUSTOM_ROWS:
             for pos in CUSTOM_ROWS:
                 h_box = CustomRow(pos["name"], pos["cmd"], pos["icon"])
                 v_box.pack_start(h_box, False, False, 0)
@@ -437,7 +439,8 @@ class MyWindow(Gtk.Window):
         # fixed Preferences button
         btn = PreferencesButton()
         h_box.pack_start(btn, True, False, 4)
-        if BUTTONS:
+
+        if preferences["show_user_buttons"] and BUTTONS:
             # user-defined buttons
             if BUTTONS:
                 for pos in BUTTONS:

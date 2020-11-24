@@ -1,6 +1,7 @@
 {
   "icon_set": "light",
   "custom_styling": true,
+  "dont_close": false,
   "show_cli_label": true,
   "show_brightness_slider": true,
   "show_volume_slider": true,
@@ -8,7 +9,8 @@
   "show_wifi_line": true,
   "show_bt_line": true,
   "show_battery_line": true,
-  "dont_close": false,
+  "show_user_rows": true,
+  "show_user_buttons": true,
   "icon_size_small": 16,
   "icon_size_large": 24,
   "refresh_fast_millis": 500,
