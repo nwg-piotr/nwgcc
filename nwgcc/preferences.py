@@ -154,7 +154,7 @@ class PreferencesWindow(Gtk.Window):
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "custom_styling")
         grid.attach(checkbutton, 0, 9, 1, 1)
 
-        checkbutton = Gtk.CheckButton.new_with_label("Don't close on click")
+        checkbutton = Gtk.CheckButton.new_with_label("Keep window open")
         checkbutton.set_active(self.preferences["dont_close"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "dont_close")
         grid.attach(checkbutton, 1, 9, 1, 1)

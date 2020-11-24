@@ -67,10 +67,6 @@ if preferences["icon_set"] == "light":
     icons_path = os.path.join(config_dir, "icons_light")
 elif preferences["icon_set"] == "dark":
     icons_path = os.path.join(config_dir, "icons_dark")
-if icons_path:
-    print("Icons path: '{}'".format(icons_path))
-else:
-    print("GTK icons in use")
 
 
 # Init user-defined CLI commands list from the plain text file
@@ -493,6 +489,14 @@ def main():
     if debug:
         check_all_commands(COMMANDS)
 
+    if icons_path:
+        if "icons_light" in icons_path:
+            print("Icons: Custom light")
+        elif "icons_dark" in icons_path:
+            print("Icons: Custom dark")
+    else:
+        print("Icons: GTK")
+
     screen = Gdk.Screen.get_default()
     provider = Gtk.CssProvider()
     style_context = Gtk.StyleContext()
@@ -502,7 +506,7 @@ def main():
         css_path = os.path.join(config_dir, args.css)
         try:
             provider.load_from_path(css_path)
-            print("Custom css: '{}'".format(css_path))
+            print("Style: '{}'".format(css_path))
         except:
             print("ERROR: couldn't load '{}'".format(css_path))
             css = b"""
@@ -517,7 +521,7 @@ def main():
                 """
             provider.load_from_data(css)
     else:
-        print("Custom styling turned off")
+        print("Style: GTK")
         css = b"""
                         #row-normal {
                             padding: 2px;
