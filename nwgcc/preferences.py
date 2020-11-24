@@ -60,7 +60,7 @@ class PreferencesWindow(Gtk.Window):
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
-        label.set_text("Components to display:")
+        label.set_text("COMPONENTS TO DISPLAY:")
         grid.attach(label, 0, 2, 1, 1)
 
         checkbutton = Gtk.CheckButton.new_with_label("CLI label")
@@ -113,7 +113,7 @@ class PreferencesWindow(Gtk.Window):
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
-        label.set_text("Window settings:")
+        label.set_text("WINDOW SETTINGS:")
         grid.attach(label, 0, 7, 1, 1)
 
         icon_set_combo = Gtk.ComboBoxText()
@@ -129,53 +129,73 @@ class PreferencesWindow(Gtk.Window):
         icon_set_combo.connect("changed", self.on_icon_set_changed)
         grid.attach(icon_set_combo, 0, 8, 1, 1)
 
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_text("Small icons size")
+        grid.attach(label, 1, 7, 1, 1)
+
+        spin_button = Gtk.SpinButton.new_with_range(0, 3600, 1)
+        spin_button.set_value(self.preferences["icon_size_small"])
+        spin_button.connect("value-changed", self.on_spin_value_changed, "icon_size_small")
+        grid.attach(spin_button, 1, 8, 1, 1)
+
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_text("Large icons size")
+        grid.attach(label, 2, 7, 1, 1)
+
+        spin_button = Gtk.SpinButton.new_with_range(0, 3600, 1)
+        spin_button.set_value(self.preferences["icon_size_large"])
+        spin_button.connect("value-changed", self.on_spin_value_changed, "icon_size_large")
+        grid.attach(spin_button, 2, 8, 1, 1)
+
         checkbutton = Gtk.CheckButton.new_with_label("Use custom css")
         checkbutton.set_active(self.preferences["custom_styling"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "custom_styling")
-        grid.attach(checkbutton, 1, 8, 1, 1)
+        grid.attach(checkbutton, 0, 9, 1, 1)
 
-        checkbutton = Gtk.CheckButton.new_with_label("Don't close")
+        checkbutton = Gtk.CheckButton.new_with_label("Don't close on click")
         checkbutton.set_active(self.preferences["dont_close"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "dont_close")
-        grid.attach(checkbutton, 2, 8, 1, 1)
+        grid.attach(checkbutton, 1, 9, 1, 1)
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
         label.set_text("CLI label refresh rate [s]")
-        grid.attach(label, 0, 9, 1, 1)
+        grid.attach(label, 0, 10, 1, 1)
 
         spin_button = Gtk.SpinButton.new_with_range(0, 3600, 1)
         spin_button.set_value(self.preferences["refresh_cli_seconds"])
         spin_button.connect("value-changed", self.on_spin_value_changed, "refresh_cli_seconds")
-        grid.attach(spin_button, 0, 10, 1, 1)
+        grid.attach(spin_button, 0, 11, 1, 1)
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
         label.set_text("Sliders, Wi-Fi, BT [ms]")
-        grid.attach(label, 1, 9, 1, 1)
+        grid.attach(label, 1, 10, 1, 1)
 
         spin_button = Gtk.SpinButton.new_with_range(0, 1000, 1)
         spin_button.set_value(self.preferences["refresh_fast_millis"])
         spin_button.connect("value-changed", self.on_spin_value_changed, "refresh_fast_millis")
-        grid.attach(spin_button, 1, 10, 1, 1)
+        grid.attach(spin_button, 1, 11, 1, 1)
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
         label.set_text("Battery refresh rate [s]")
-        grid.attach(label, 2, 9, 1, 1)
+        grid.attach(label, 2, 10, 1, 1)
 
         spin_button = Gtk.SpinButton.new_with_range(1, 60, 1)
         spin_button.set_value(self.preferences["refresh_slow_seconds"])
         spin_button.connect("value-changed", self.on_spin_value_changed, "refresh_slow_seconds")
-        grid.attach(spin_button, 2, 10, 1, 1)
+        grid.attach(spin_button, 2, 11, 1, 1)
 
         cancel_button = Gtk.Button.new_with_label("Cancel")
         cancel_button.connect("clicked", self.on_cancel_button)
-        grid.attach(cancel_button, 1, 11, 1, 1)
+        grid.attach(cancel_button, 1, 12, 1, 1)
 
         apply_button = Gtk.Button.new_with_label("Apply")
         apply_button.connect("clicked", self.on_apply_button)
-        grid.attach(apply_button, 2, 11, 1, 1)
+        grid.attach(apply_button, 2, 12, 1, 1)
 
         v_box.pack_start(grid, True, True, 10)
 
