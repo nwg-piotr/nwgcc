@@ -1,4 +1,5 @@
-recursive-include nwgcc/configs *
-recursive-include nwgcc/icons_light *
-recursive-include nwgcc/icons_dark *
 recursive-include nwgcc/commands *
+recursive-include nwgcc/configs *
+recursive-include nwgcc/icons_dark *
+recursive-include nwgcc/icons_light *
+recursive-include nwgcc/preferences *
