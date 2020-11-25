@@ -1,23 +1,4 @@
 {
-  "icons": {
-    "battery-empty": "battery-empty",
-    "battery-low": "battery-low",
-    "battery-good": "battery-good",
-    "battery-full": "battery-full",
-    "user": "user-info",
-    "wifi-on": "network-wireless",
-    "wifi-off": "network-wireless-offline",
-    "brightness-low": "display-brightness-low",
-    "brightness": "display-brightness",
-    "brightness-high": "display-brightness-high",
-    "brightness-full": "display-brightness-full",
-    "bt-on": "bluetooth-active",
-    "bt-off": "bluetooth-disabled",
-    "volume-low": "audio-volume-low",
-    "volume-medium": "audio-volume-medium",
-    "volume-high": "audio-volume-high",
-    "volume-muted": "audio-volume-muted"
-  },
   "custom_rows": [
     {
       "name": "Wayfire Config Manager",

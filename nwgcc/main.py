@@ -13,30 +13,25 @@ import argparse
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
-import shared
 from tools import *
 from preferences import PreferencesWindow
 
 debug = False
 
 shared.dirname = os.path.dirname(__file__)
-config_dir = get_config_dir()
-data_dir, commands_dir = get_data_dir()
+data_dir = get_data_dir()
+commands_dir = os.path.join(data_dir, "commands")
+config_dir = get_config_dir(data_dir)
 
 # Copy default files if not found
 init_config_files(os.path.join(shared.dirname, "configs"), config_dir)
-copy_files(os.path.join(shared.dirname, "icons_light"), os.path.join(config_dir, "icons_light"))
-copy_files(os.path.join(shared.dirname, "icons_dark"), os.path.join(config_dir, "icons_dark"))
-copy_files(os.path.join(shared.dirname, "commands"), commands_dir)
+copy_files(os.path.join(shared.dirname, "icons_light"), os.path.join(data_dir, "icons_light"))
+copy_files(os.path.join(shared.dirname, "icons_dark"), os.path.join(data_dir, "icons_dark"))
 
 config_data = load_json(os.path.join(config_dir, "config.json"))
 
 # Init dictionaries from ~/.config/nwgcc/config.json
-if "icons" in config_data:
-    ICONS: dict = config_data["icons"]
-else:
-    ICONS = {}
-    print("ERROR: Icons dictionary missing from '{}'".format(os.path.join(config_dir, "config.json")))
+
 
 if "custom_rows" in config_data:
     CUSTOM_ROWS: dict = config_data["custom_rows"]
@@ -50,21 +45,26 @@ else:
 
 # Load preferences from ~/.local/share/nwgcc/preferences.json
 # Check the file presence and validity first
-preferences: dict = init_preferences(os.path.join(shared.dirname, "preferences/preferences.json"),
+pref: dict = init_preferences(os.path.join(shared.dirname, "preferences/preferences.json"),
                                os.path.join(data_dir, "preferences.json"))
+preferences: dict = pref["preferences"]
 
-# Load on-click commands from ~/.local/share/nwgcc/on_click.json
-# Check the file presence and validity first
-ON_CLICK: dict = init_preferences(os.path.join(shared.dirname, "preferences/on_click.json"),
-                               os.path.join(data_dir, "on_click.json"))
+if "icons" in pref:
+    ICONS: dict = pref["icons"]
+else:
+    ICONS = {}
+    print("ERROR: Icons dictionary missing from '{}'".format(os.path.join(config_dir, "config.json")))
 
-# Load commands from ~/.local/share/nwgcc/commands/
-COMMANDS: dict = load_commands(commands_dir)
+if "commands" in pref:
+    COMMANDS: dict = pref["commands"]
+else:
+    COMMANDS = {}
+    print("ERROR: Commands dictionary missing from '{}'".format(os.path.join(config_dir, "config.json")))
 
 if preferences["icon_set"] == "light":
-    shared.icons_path = os.path.join(config_dir, "icons_light")
+    shared.icons_path = os.path.join(data_dir, "icons_light")
 elif preferences["icon_set"] == "dark":
-    shared.icons_path = os.path.join(config_dir, "icons_dark")
+    shared.icons_path = os.path.join(data_dir, "icons_dark")
 
 
 # Init user-defined CLI commands list from the plain text file
@@ -133,7 +133,7 @@ class CustomRow(Gtk.EventBox):
 
 
 class UserRow(CustomRow):
-    def __init__(self, cmd=ON_CLICK["user"]):
+    def __init__(self, cmd=preferences["on-click-user"]):
         icon = ICONS["user"] if "user" in ICONS else ""
         name = "{}@{}".format(cmd2string(COMMANDS["get_user"]), cmd2string(COMMANDS["get_host"]))
         super().__init__(name, cmd, icon)
@@ -144,7 +144,7 @@ class UserRow(CustomRow):
 
 
 class BatteryRow(CustomRow):
-    def __init__(self, cmd=ON_CLICK["battery"]):
+    def __init__(self, cmd=preferences["on-click-battery"]):
         name, icon = self.get_values()
         super().__init__(name, cmd, icon)
 
@@ -167,7 +167,7 @@ class BatteryRow(CustomRow):
 
 
 class WifiRow(CustomRow):
-    def __init__(self, cmd=ON_CLICK["wifi"]):
+    def __init__(self, cmd=preferences["on-click-wifi"]):
         name, icon = self.get_values()
         super().__init__(name, cmd, icon)
 
@@ -188,7 +188,7 @@ class WifiRow(CustomRow):
 
 
 class BluetoothRow(CustomRow):
-    def __init__(self, cmd=ON_CLICK["bluetooth"]):
+    def __init__(self, cmd=preferences["on-click-bluetooth"]):
         name, icon = self.get_values()
         super().__init__(name, cmd, icon)
 
@@ -320,7 +320,8 @@ class PreferencesButton(CustomButton):
                                                os.path.join(data_dir, "preferences.json"),
                                                os.path.join(config_dir, "cli_commands"),
                                                config_data,
-                                               os.path.join(config_dir, "config.json"))
+                                               os.path.join(config_dir, "config.json"),
+                                               ICONS)
         #preferences_window.set_transient_for(win)
         preferences_window.show()
 

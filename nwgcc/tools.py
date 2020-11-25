@@ -44,7 +44,7 @@ def create_pixbuf(icon, size):
     return pixbuf
 
 
-def get_config_dir():
+def get_config_dir(data_dir):
     """
     Determine config dir path, create if not found, then create sub-dirs
     """
@@ -56,13 +56,13 @@ def get_config_dir():
         os.mkdir(config_dir)
 
     # Icon folders
-    icon_folder = os.path.join(config_dir, "icons_light")
+    icon_folder = os.path.join(data_dir, "icons_light")
     if not os.path.isdir(icon_folder):
         print("Creating '{}'".format(icon_folder))
         os.mkdir(icon_folder)
 
-    icon_folder = os.path.join(config_dir, "icons_dark")
-    if not os.path.isdir(os.path.join(config_dir, "icons_dark")):
+    icon_folder = os.path.join(data_dir, "icons_dark")
+    if not os.path.isdir(os.path.join(data_dir, "icons_dark")):
         print("Creating '{}'".format(icon_folder))
         os.mkdir(icon_folder)
 
@@ -77,13 +77,8 @@ def get_data_dir():
     if not os.path.isdir(data_dir):
         print("Creating '{}'".format(data_dir))
         os.mkdir(data_dir)
-    # dir for txt files containing built-in commands
-    commands_dir = os.path.join(data_dir, "commands")
-    if not os.path.isdir(commands_dir):
-        print("Creating '{}'".format(commands_dir))
-        os.mkdir(commands_dir)
 
-    return data_dir, commands_dir
+    return data_dir
 
 
 def init_config_files(src_dir, config_dir):
@@ -322,16 +317,3 @@ def load_cli_commands(path):
     except:
         return "Error reading file"
 
-
-def load_commands(path):
-    src_files = os.listdir(path)
-    output = {}
-    for file in src_files:
-        pth = os.path.join(path, file)
-        if file != "README":
-            with open(pth, 'r') as p:
-                data = p.read()
-                output[file] = data.splitlines()[0]
-            p.close()
-
-    return output

@@ -9,12 +9,13 @@ from tools import save_json, load_cli_commands, save_string, create_pixbuf
 
 
 class PreferencesWindow(Gtk.Window):
-    def __init__(self, preferences, preferences_path, cli_path, config_data, config_file_path):
+    def __init__(self, preferences, preferences_path, cli_path, config_data, config_file_path, icons_dict):
         self.preferences = preferences
         self.preferences_file = preferences_path
         self.cli_path = cli_path
         self.config_data = config_data
         self.config_file_path = config_file_path
+        self.icons_dict = icons_dict
         self.cli_commands = load_cli_commands(self.cli_path)
         self.cli_textview = Gtk.TextView()
 
@@ -77,25 +78,49 @@ class PreferencesWindow(Gtk.Window):
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_volume_slider")
         grid.attach(checkbutton, 2, 3, 1, 1)
 
+        hbox = Gtk.HBox()
         checkbutton = Gtk.CheckButton.new_with_label("User info")
         checkbutton.set_active(self.preferences["show_user_line"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_user_line")
-        grid.attach(checkbutton, 0, 4, 1, 1)
+        hbox.pack_start(checkbutton, False, False, 0)
+        button = Gtk.Button()
+        image = Gtk.Image.new_from_pixbuf(create_pixbuf(self.icons_dict["command-edit"], 16))
+        button.set_image(image)
+        hbox.pack_end(button, False, False, 0)
+        grid.attach(hbox, 0, 4, 1, 1)
 
+        hbox = Gtk.HBox()
         checkbutton = Gtk.CheckButton.new_with_label("Wi-fi status")
         checkbutton.set_active(self.preferences["show_wifi_line"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_wifi_line")
-        grid.attach(checkbutton, 1, 4, 1, 1)
+        hbox.pack_start(checkbutton, False, False, 0)
+        button = Gtk.Button()
+        image = Gtk.Image.new_from_pixbuf(create_pixbuf(self.icons_dict["command-edit"], 16))
+        button.set_image(image)
+        hbox.pack_end(button, False, False, 0)
+        grid.attach(hbox, 1, 4, 1, 1)
 
+        hbox = Gtk.HBox()
         checkbutton = Gtk.CheckButton.new_with_label("Bluetooth status")
         checkbutton.set_active(self.preferences["show_bt_line"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_bt_line")
-        grid.attach(checkbutton, 2, 4, 1, 1)
+        hbox.pack_start(checkbutton, False, False, 0)
+        button = Gtk.Button()
+        image = Gtk.Image.new_from_pixbuf(create_pixbuf(self.icons_dict["command-edit"], 16))
+        button.set_image(image)
+        hbox.pack_end(button, False, False, 0)
+        grid.attach(hbox, 2, 4, 1, 1)
 
+        hbox = Gtk.HBox()
         checkbutton = Gtk.CheckButton.new_with_label("Battery level")
         checkbutton.set_active(self.preferences["show_battery_line"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_battery_line")
-        grid.attach(checkbutton, 0, 5, 1, 1)
+        hbox.pack_start(checkbutton, False, False, 0)
+        button = Gtk.Button()
+        image = Gtk.Image.new_from_pixbuf(create_pixbuf(self.icons_dict["command-edit"], 16))
+        button.set_image(image)
+        hbox.pack_end(button, False, False, 0)
+        grid.attach(hbox, 0, 5, 1, 1)
 
         checkbutton = Gtk.CheckButton.new_with_label("User rows")
         checkbutton.set_active(self.preferences["show_user_rows"])
