@@ -75,37 +75,6 @@ icon_theme = Gtk.IconTheme.get_default()
 win = None
 
 
-"""def create_pixbuf(icon, size):
-    # full path given
-    if icon.startswith('/'):
-        if icons_path:
-            icon = os.path.join(icons_path, icon)
-        try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
-        except:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(dirname, 'icons_light/icon-missing.svg'),
-                                                            size, size)
-    # just name given
-    else:
-        # In case someone wrote 'name.svg' instead of just 'name' in the "icons" dictionary (config_dir/config.json)
-        if icon.endswith(".svg"):
-            icon = "".join(icon.split(".")[:-1])
-        if icons_path:
-            icon = os.path.join(icons_path, (icon + ".svg"))
-            try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
-            except:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(dirname, 'icons_light/icon-missing.svg'),
-                                                                size, size)
-        else:
-            try:
-                pixbuf = icon_theme.load_icon(icon, size, Gtk.IconLookupFlags.FORCE_SIZE)
-            except:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(dirname, 'icons_light/icon-missing.svg'),
-                                                            size, size)
-    return pixbuf"""
-
-
 def launch_from_row(widget, event, cmd):
     print("Executing '{}'".format(cmd))
     subprocess.Popen('exec {}'.format(cmd), shell=True)
@@ -315,6 +284,7 @@ class BrightnessRow(Gtk.HBox):
 class CustomButton(Gtk.Button):
     def __init__(self, name, cmd, icon):
         Gtk.Button.__init__(self)
+        self.set_property("name", "custom-button")
         pixbuf = create_pixbuf(icon, preferences["icon_size_large"])
         image = Gtk.Image.new_from_pixbuf(pixbuf)
         self.set_always_show_image(True)
@@ -336,6 +306,7 @@ class CustomButton(Gtk.Button):
 class PreferencesButton(CustomButton):
     def __init__(self):
         Gtk.Button.__init__(self)
+        self.set_property("name", "custom-button")
         pixbuf = create_pixbuf("emblem-system", preferences["icon_size_large"])
         image = Gtk.Image.new_from_pixbuf(pixbuf)
         self.set_always_show_image(True)

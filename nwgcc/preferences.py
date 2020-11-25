@@ -4,6 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib
 
+import shared
 from tools import save_json, load_cli_commands, save_string, create_pixbuf
 
 
@@ -33,7 +34,7 @@ class PreferencesWindow(Gtk.Window):
         self.add(box_outer_v)
 
         box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=36)
-        box_outer_v.pack_start(box_outer_h, False, False, 10)
+        box_outer_v.pack_start(box_outer_h, True, True, 20)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(10)
@@ -194,7 +195,7 @@ class PreferencesWindow(Gtk.Window):
         button_box.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_label("User buttons")
-        # button.connect("clicked", self.on_cancel_button)
+        button.connect("clicked", self.on_user_buttons_button)
         button_box.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_label("Icons")
@@ -211,7 +212,7 @@ class PreferencesWindow(Gtk.Window):
 
         grid.attach(button_box, 0, 12, 3, 1)
 
-        box_outer_h.pack_start(grid, True, True, 10)
+        box_outer_h.pack_start(grid, True, True, 20)
 
         self.show_all()
 
@@ -226,6 +227,9 @@ class PreferencesWindow(Gtk.Window):
 
     def on_user_rows_button(self, button):
         tew = TemplateEditionWindow("User rows", self.config_data, self.config_file_path, "custom_rows")
+
+    def on_user_buttons_button(self, button):
+        tew = TemplateEditionWindow("User buttons", self.config_data, self.config_file_path, "buttons")
 
     def on_cancel_button(self, button):
         self.close()
@@ -256,7 +260,7 @@ class TemplateEditionWindow(Gtk.Window):
 
         super(TemplateEditionWindow, self).__init__()
         self.set_title(win_name)
-        self.set_default_size(500, 100)
+        self.set_default_size(700, 100)
         self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.set_modal(True)
         self.set_property("name", "preferences")
@@ -271,18 +275,11 @@ class TemplateEditionWindow(Gtk.Window):
         self.add(box_outer_v)
 
         box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=36)
-        box_outer_v.pack_start(box_outer_h, False, False, 10)
+        box_outer_v.pack_start(box_outer_h, True, True, 20)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(10)
         grid.set_row_spacing(10)
-
-        grid_rows = []
-        for i in range(len(self.config[self.config_key])):
-            data_row = self.config[self.config_key][i]
-            for key in data_row:
-                row = self.GridRowContent(data_row["name"], data_row["cmd"], data_row["icon"])
-            grid_rows.append(row)
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
@@ -299,13 +296,21 @@ class TemplateEditionWindow(Gtk.Window):
         label.set_text("Icon name or path")
         grid.attach(label, 2, 0, 1, 1)
 
+        grid_rows = []
+        for i in range(len(self.config[self.config_key])):
+            data_row = self.config[self.config_key][i]
+            for key in data_row:
+                row = self.GridRowContent(data_row["name"], data_row["cmd"], data_row["icon"])
+            grid_rows.append(row)
+
         for i in range(len(grid_rows)):
             row = grid_rows[i]
             grid.attach(row.name, 0, i + 1, 1, 1)
             grid.attach(row.command, 1, i + 1, 1, 1)
             grid.attach(row.icon, 2, i + 1, 1, 1)
+            grid.attach(row.file_chooser_button, 3, i + 1, 1, 1)
 
-        box_outer_h.pack_start(grid, True, True, 10)
+        box_outer_h.pack_start(grid, True, True, 20)
 
         self.show_all()
 
@@ -314,14 +319,33 @@ class TemplateEditionWindow(Gtk.Window):
             self.name = Gtk.Entry()
             self.name.set_property("name", "edit-field")
             self.name.set_text(name)
+            self.name.set_width_chars(20)
+
             self.command = Gtk.Entry()
             self.command.set_property("name", "edit-field")
             self.command.set_text(command)
+            self.command.set_width_chars(20)
+
             self.icon = Gtk.Entry()
             self.icon.set_property("name", "edit-field")
-            self.icon.set_max_length(100)
             self.icon.set_text(icon)
-            self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(icon, 24))
+            self.icon.set_width_chars(40)
+            self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(icon, 16))
+            self.icon.connect("changed", self.on_icon_changed)
+
+            self.file_chooser_button = Gtk.FileChooserButton("", Gtk.FileChooserAction.OPEN)
+            self.file_chooser_button.set_width_chars(5)
+            self.file_chooser_button.set_current_folder(shared.initial_path)
+            self.file_chooser_button.connect("file-set", self.on_file_set)
+
+        def on_icon_changed(self, entry):
+            self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(entry.get_text(), 16))
+
+        def on_file_set(self, file_chooser):
+            path = file_chooser.get_filename()
+            self.icon.set_text(path)
+            self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(path, 16))
+            shared.initial_path = "/".join(path.split("/")[:-1])
 
     def handle_keyboard(self, item, event):
         if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:
