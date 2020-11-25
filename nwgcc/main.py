@@ -13,20 +13,21 @@ import argparse
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 
+import shared
 from tools import *
 from preferences import PreferencesWindow
 
 debug = False
 
-dirname = os.path.dirname(__file__)
+shared.dirname = os.path.dirname(__file__)
 config_dir = get_config_dir()
 data_dir, commands_dir = get_data_dir()
 
 # Copy default files if not found
-init_config_files(os.path.join(dirname, "configs"), config_dir)
-copy_files(os.path.join(dirname, "icons_light"), os.path.join(config_dir, "icons_light"))
-copy_files(os.path.join(dirname, "icons_dark"), os.path.join(config_dir, "icons_dark"))
-copy_files(os.path.join(dirname, "commands"), commands_dir)
+init_config_files(os.path.join(shared.dirname, "configs"), config_dir)
+copy_files(os.path.join(shared.dirname, "icons_light"), os.path.join(config_dir, "icons_light"))
+copy_files(os.path.join(shared.dirname, "icons_dark"), os.path.join(config_dir, "icons_dark"))
+copy_files(os.path.join(shared.dirname, "commands"), commands_dir)
 
 config_data = load_json(os.path.join(config_dir, "config.json"))
 
@@ -47,26 +48,23 @@ if "buttons" in config_data:
 else:
     BUTTONS = {}
 
-del config_data
-
 # Load preferences from ~/.local/share/nwgcc/preferences.json
 # Check the file presence and validity first
-preferences: dict = init_preferences(os.path.join(dirname, "preferences/preferences.json"),
+preferences: dict = init_preferences(os.path.join(shared.dirname, "preferences/preferences.json"),
                                os.path.join(data_dir, "preferences.json"))
 
 # Load on-click commands from ~/.local/share/nwgcc/on_click.json
 # Check the file presence and validity first
-ON_CLICK: dict = init_preferences(os.path.join(dirname, "preferences/on_click.json"),
+ON_CLICK: dict = init_preferences(os.path.join(shared.dirname, "preferences/on_click.json"),
                                os.path.join(data_dir, "on_click.json"))
 
 # Load commands from ~/.local/share/nwgcc/commands/
 COMMANDS: dict = load_commands(commands_dir)
 
-icons_path = ""
 if preferences["icon_set"] == "light":
-    icons_path = os.path.join(config_dir, "icons_light")
+    shared.icons_path = os.path.join(config_dir, "icons_light")
 elif preferences["icon_set"] == "dark":
-    icons_path = os.path.join(config_dir, "icons_dark")
+    shared.icons_path = os.path.join(config_dir, "icons_dark")
 
 
 # Init user-defined CLI commands list from the plain text file
@@ -77,7 +75,7 @@ icon_theme = Gtk.IconTheme.get_default()
 win = None
 
 
-def create_pixbuf(icon, size):
+"""def create_pixbuf(icon, size):
     # full path given
     if icon.startswith('/'):
         if icons_path:
@@ -105,7 +103,7 @@ def create_pixbuf(icon, size):
             except:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(dirname, 'icons_light/icon-missing.svg'),
                                                             size, size)
-    return pixbuf
+    return pixbuf"""
 
 
 def launch_from_row(widget, event, cmd):
@@ -349,8 +347,10 @@ class PreferencesButton(CustomButton):
     def launch(self, widget):
         preferences_window = PreferencesWindow(preferences,
                                                os.path.join(data_dir, "preferences.json"),
-                                               os.path.join(config_dir, "cli_commands"))
-        preferences_window.set_transient_for(win)
+                                               os.path.join(config_dir, "cli_commands"),
+                                               config_data,
+                                               os.path.join(config_dir, "config.json"))
+        #preferences_window.set_transient_for(win)
         preferences_window.show()
 
 
@@ -489,10 +489,10 @@ def main():
     if debug:
         check_all_commands(COMMANDS)
 
-    if icons_path:
-        if "icons_light" in icons_path:
+    if shared.icons_path:
+        if "icons_light" in shared.icons_path:
             print("Icons: Custom light")
-        elif "icons_dark" in icons_path:
+        elif "icons_dark" in shared.icons_path:
             print("Icons: Custom dark")
     else:
         print("Icons: GTK")

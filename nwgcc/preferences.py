@@ -4,18 +4,21 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib
 
-from tools import save_json, load_cli_commands, save_string
+from tools import save_json, load_cli_commands, save_string, create_pixbuf
 
 
 class PreferencesWindow(Gtk.Window):
-    def __init__(self, preferences, preferences_path, cli_path):
+    def __init__(self, preferences, preferences_path, cli_path, config_data, config_file_path):
         self.preferences = preferences
         self.preferences_file = preferences_path
         self.cli_path = cli_path
+        self.config_data = config_data
+        self.config_file_path = config_file_path
         self.cli_commands = load_cli_commands(self.cli_path)
         self.cli_textview = Gtk.TextView()
 
         super(PreferencesWindow, self).__init__()
+        self.set_title("Preferences")
         self.set_default_size(400, 100)
         self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.set_modal(True)
@@ -26,16 +29,11 @@ class PreferencesWindow(Gtk.Window):
         self.init_ui()
 
     def init_ui(self):
-        self.set_title("Preferences")
-
         box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=36)
         self.add(box_outer_v)
 
         box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=36)
         box_outer_v.pack_start(box_outer_h, False, False, 10)
-
-        v_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        box_outer_h.pack_start(v_box, True, True, 10)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(10)
@@ -189,15 +187,31 @@ class PreferencesWindow(Gtk.Window):
         spin_button.connect("value-changed", self.on_spin_value_changed, "refresh_slow_seconds")
         grid.attach(spin_button, 2, 11, 1, 1)
 
-        cancel_button = Gtk.Button.new_with_label("Cancel")
-        cancel_button.connect("clicked", self.on_cancel_button)
-        grid.attach(cancel_button, 1, 12, 1, 1)
+        button_box = Gtk.HBox(True, False)
 
-        apply_button = Gtk.Button.new_with_label("Apply")
-        apply_button.connect("clicked", self.on_apply_button)
-        grid.attach(apply_button, 2, 12, 1, 1)
+        button = Gtk.Button.new_with_label("User rows")
+        button.connect("clicked", self.on_user_rows_button)
+        button_box.pack_start(button, True, True, 0)
 
-        v_box.pack_start(grid, True, True, 10)
+        button = Gtk.Button.new_with_label("User buttons")
+        # button.connect("clicked", self.on_cancel_button)
+        button_box.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_label("Icons")
+        # button.connect("clicked", self.on_cancel_button)
+        button_box.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_label("Cancel")
+        button.connect("clicked", self.on_cancel_button)
+        button_box.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_label("Apply")
+        button.connect("clicked", self.on_apply_button)
+        button_box.pack_start(button, True, True, 0)
+
+        grid.attach(button_box, 0, 12, 3, 1)
+
+        box_outer_h.pack_start(grid, True, True, 10)
 
         self.show_all()
 
@@ -209,6 +223,9 @@ class PreferencesWindow(Gtk.Window):
 
     def on_spin_value_changed(self, spin_button, preferences_key):
         self.preferences[preferences_key] = int(spin_button.get_value())
+
+    def on_user_rows_button(self, button):
+        tew = TemplateEditionWindow("User rows", self.config_data, self.config_file_path, "custom_rows")
 
     def on_cancel_button(self, button):
         self.close()
@@ -224,6 +241,87 @@ class PreferencesWindow(Gtk.Window):
         end = buffer.get_end_iter()
         self.cli_commands = self.cli_textview.get_buffer().get_text(start, end, True)
         save_string(self.cli_commands, self.cli_path)
+
+    def handle_keyboard(self, item, event):
+        if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:
+            self.close()
+        return True
+
+
+class TemplateEditionWindow(Gtk.Window):
+    def __init__(self, win_name, config, config_file_path, config_key):
+        self.config = config
+        self.config_file_path = config_file_path
+        self.config_key = config_key
+
+        super(TemplateEditionWindow, self).__init__()
+        self.set_title(win_name)
+        self.set_default_size(500, 100)
+        self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+        self.set_modal(True)
+        self.set_property("name", "preferences")
+
+        self.connect("key-release-event", self.handle_keyboard)
+
+        self.init_ui()
+
+    def init_ui(self):
+        box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=36)
+        box_outer_v.set_property("name", "user-form")
+        self.add(box_outer_v)
+
+        box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=36)
+        box_outer_v.pack_start(box_outer_h, False, False, 10)
+
+        grid = Gtk.Grid()
+        grid.set_column_spacing(10)
+        grid.set_row_spacing(10)
+
+        grid_rows = []
+        for i in range(len(self.config[self.config_key])):
+            data_row = self.config[self.config_key][i]
+            for key in data_row:
+                row = self.GridRowContent(data_row["name"], data_row["cmd"], data_row["icon"])
+            grid_rows.append(row)
+
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_text("Label")
+        grid.attach(label, 0, 0, 1, 1)
+
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_text("Command")
+        grid.attach(label, 1, 0, 1, 1)
+
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_text("Icon name or path")
+        grid.attach(label, 2, 0, 1, 1)
+
+        for i in range(len(grid_rows)):
+            row = grid_rows[i]
+            grid.attach(row.name, 0, i + 1, 1, 1)
+            grid.attach(row.command, 1, i + 1, 1, 1)
+            grid.attach(row.icon, 2, i + 1, 1, 1)
+
+        box_outer_h.pack_start(grid, True, True, 10)
+
+        self.show_all()
+
+    class GridRowContent(object):
+        def __init__(self, name, command, icon):
+            self.name = Gtk.Entry()
+            self.name.set_property("name", "edit-field")
+            self.name.set_text(name)
+            self.command = Gtk.Entry()
+            self.command.set_property("name", "edit-field")
+            self.command.set_text(command)
+            self.icon = Gtk.Entry()
+            self.icon.set_property("name", "edit-field")
+            self.icon.set_max_length(100)
+            self.icon.set_text(icon)
+            self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(icon, 24))
 
     def handle_keyboard(self, item, event):
         if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:

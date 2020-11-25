@@ -6,6 +6,43 @@ import subprocess
 import json
 from shutil import copyfile
 
+import shared
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GdkPixbuf
+
+
+def create_pixbuf(icon, size):
+    # full path given
+    if icon.startswith('/'):
+        if shared.icons_path:
+            icon = os.path.join(shared.icons_path, icon)
+        try:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
+        except:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(shared.dirname, 'icons_light/icon-missing.svg'),
+                                                            size, size)
+    # just name given
+    else:
+        # In case someone wrote 'name.svg' instead of just 'name' in the "icons" dictionary (config_dir/config.json)
+        if icon.endswith(".svg"):
+            icon = "".join(icon.split(".")[:-1])
+        if shared.icons_path:
+            icon = os.path.join(shared.icons_path, (icon + ".svg"))
+            try:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
+            except:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(shared.dirname, 'icons_light/icon-missing.svg'),
+                                                                size, size)
+        else:
+            try:
+                pixbuf = shared.icon_theme.load_icon(icon, size, Gtk.IconLookupFlags.FORCE_SIZE)
+            except:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(shared.dirname, 'icons_light/icon-missing.svg'),
+                                                            size, size)
+    return pixbuf
+
 
 def get_config_dir():
     """
