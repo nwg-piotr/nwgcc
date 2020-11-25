@@ -5,7 +5,8 @@
 	/* border-radius: 10px; */
 	border-style: solid;
 	border-width: 1px;
-	border-color: rgba (248, 132, 97, 1.0)
+	border-color: rgba (248, 132, 97, 1.0);
+	color: #eee
 }
 
 /* Custom rows */
@@ -65,14 +66,21 @@ button {
 
 #custom-button:hover {
 	background-color: rgba (248, 132, 97, 1.0);
+	color: #eee
 }
 
 menu {
-    background-color: rgba (72, 72, 70, 1.0)
+    background-color: rgba (72, 72, 70, 1.0);
+    color: #eee
+}
+
+menuitem {
+	color: #eee
 }
 
 textview.view text {
-    background-color: rgba (72, 72, 70, 1.0)
+    background-color: rgba (72, 72, 70, 1.0);
+    color: #eee
 }
 
 /*** Preferences window ***/
@@ -84,7 +92,8 @@ spinbutton.horizontal {
     background-color: rgba (64, 64, 60, 1.0);
     border-radius: 7px;
     border-style: solid;
-    border-color: rgba (248, 132, 97, 0.5)
+    border-color: rgba (248, 132, 97, 0.5);
+    color: #eee
 }
 
 
@@ -93,11 +102,17 @@ spinbutton.horizontal {
     background-color: rgba (72, 72, 70, 1.0);
     border-style: solid;
 	border-width: 1px;
-	border-color: rgba (248, 132, 97, 1.0)
+	border-color: rgba (248, 132, 97, 1.0);
+	color: #eee
 }
 
 /* Text input */
 #edit-field {
     background-color: rgba (64, 64, 60, 1.0);
-	border-style: none
+	border-style: none;
+	color: #eee
+}
+
+label {
+	color: #eee
 }
