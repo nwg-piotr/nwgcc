@@ -36,7 +36,7 @@ scale highlight {
     background-color: rgba (248, 132, 97, 1.0);
 }
 
-button, image {
+#custom-button, image {
 	background: none;
 	box-shadow: none;
 	color: #999
@@ -44,15 +44,26 @@ button, image {
 
 button {
     background-color: rgba (0, 0, 0, 0.1);
+    box-shadow: none;
     border-radius: 7px;
-    border-style: solid;
     border-color: rgba (248, 132, 97, 0.7);
-	padding: 10px;
-	margin: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
 	color: #eee
 }
 
-button:hover {
+#custom-button {
+    background-color: rgba (0, 0, 0, 0.1);
+    box-shadow: none;
+    border-radius: 7px;
+    border-style: solid;
+    border-color: rgba (248, 132, 97, 0.7);
+    padding: 10px;
+    margin: 10px;
+	color: #eee
+}
+
+#custom-button:hover {
 	background-color: rgba (248, 132, 97, 1.0);
 }
 
