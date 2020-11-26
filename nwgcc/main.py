@@ -70,7 +70,7 @@ elif preferences["icon_set"] == "dark":
 # Init user-defined CLI commands list from the plain text file
 CLI_COMMANDS: list = parse_cli_commands(os.path.join(config_dir, "cli_commands"))
 
-icon_theme = Gtk.IconTheme.get_default()
+shared.icon_theme = Gtk.IconTheme.get_default()
 
 win = None
 
