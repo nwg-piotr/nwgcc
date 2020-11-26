@@ -299,7 +299,7 @@ class CustomButton(Gtk.Button):
             subprocess.Popen('exec {}'.format(cmd), shell=True)
         else:
             print("No command assigned")
-        if not preferences["dont_close"]:
+        if not preferences["dont_close"] and cmd:
             GLib.timeout_add(50, Gtk.main_quit)
 
 

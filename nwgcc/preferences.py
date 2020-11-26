@@ -263,6 +263,7 @@ class PreferencesWindow(Gtk.Window):
     def on_apply_button(self, button):
         self.save_cli_commands()
         save_json(self.pref, self.preferences_file)
+        save_json(self.config_data, self.config_file_path)
         GLib.timeout_add(0, Gtk.main_quit)
 
     def save_cli_commands(self):
@@ -284,6 +285,12 @@ class TemplateEditionWindow(Gtk.Window):
         self.config_file_path = config_file_path
         self.config_key = config_key
 
+        self.grid = Gtk.Grid()
+        self.box_outer_h = None
+
+        self.data_rows = []
+        self.local_data_copy = config[config_key].copy()
+
         super(TemplateEditionWindow, self).__init__()
         self.set_title(win_name)
         self.set_default_size(700, 100)
@@ -300,45 +307,130 @@ class TemplateEditionWindow(Gtk.Window):
         box_outer_v.set_property("name", "user-form")
         self.add(box_outer_v)
 
-        box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=36)
-        box_outer_v.pack_start(box_outer_h, True, True, 20)
+        self.box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=36)
+        box_outer_v.pack_start(self.box_outer_h, True, True, 20)
 
-        grid = Gtk.Grid()
-        grid.set_column_spacing(10)
-        grid.set_row_spacing(10)
+        self.build_grid()
+
+    def build_grid(self):
+        self.grid = Gtk.Grid()
+        self.grid.set_column_spacing(10)
+        self.grid.set_row_spacing(10)
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
         label.set_text("Label")
-        grid.attach(label, 0, 0, 1, 1)
+        self.grid.attach(label, 0, 0, 1, 1)
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
         label.set_text("Command")
-        grid.attach(label, 1, 0, 1, 1)
+        self.grid.attach(label, 1, 0, 1, 1)
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)
         label.set_text("Icon name or path")
-        grid.attach(label, 2, 0, 1, 1)
+        self.grid.attach(label, 2, 0, 1, 1)
 
-        grid_rows = []
-        for i in range(len(self.config[self.config_key])):
-            data_row = self.config[self.config_key][i]
-            for key in data_row:
+        self.data_rows = []
+        if self.local_data_copy:
+            for i in range(len(self.local_data_copy)):
+                data_row = self.local_data_copy[i]
                 row = self.GridRowContent(data_row["name"], data_row["cmd"], data_row["icon"])
-            grid_rows.append(row)
+                self.data_rows.append(row)
 
-        for i in range(len(grid_rows)):
-            row = grid_rows[i]
-            grid.attach(row.name, 0, i + 1, 1, 1)
-            grid.attach(row.command, 1, i + 1, 1, 1)
-            grid.attach(row.icon, 2, i + 1, 1, 1)
-            grid.attach(row.file_chooser_button, 3, i + 1, 1, 1)
+        for i in range(len(self.data_rows)):
+            row = self.data_rows[i]
+            self.grid.attach(row.name, 0, i + 1, 1, 1)
+            self.grid.attach(row.command, 1, i + 1, 1, 1)
+            self.grid.attach(row.icon, 2, i + 1, 1, 1)
+            self.grid.attach(row.file_chooser_button, 3, i + 1, 1, 1)
 
-        box_outer_h.pack_start(grid, True, True, 20)
+            button = Gtk.Button()
+            button.set_label("Del")
+            button.connect("clicked", self.on_del_button, i)
+            self.grid.attach(button, 4, i + 1, 1, 1)
 
+        self.empty_row = self.GridRowContent("", "", "")
+        self.empty_row.name.set_placeholder_text("Enter new label")
+        self.empty_row.command.set_placeholder_text("Enter new command")
+        self.empty_row.icon.set_placeholder_text("Enter name or choose a file")
+
+        # Empty row at the bottom
+        new_row_idx = len(self.data_rows) + 1
+
+        self.grid.attach(self.empty_row.name, 0, new_row_idx, 1, 1)
+        self.grid.attach(self.empty_row.command, 1, new_row_idx, 1, 1)
+        self.grid.attach(self.empty_row.icon, 2, new_row_idx, 1, 1)
+        self.grid.attach(self.empty_row.file_chooser_button, 3, new_row_idx, 1, 1)
+
+        button = Gtk.Button()
+        button.set_label("Add")
+        button.connect("clicked", self.on_add_button)
+        self.grid.attach(button, 4, new_row_idx, 1, 1)
+
+        button = Gtk.Button()
+        button.set_label("Cancel")
+        button.connect("clicked", self.on_cancel_button)
+        self.grid.attach(button, 3, new_row_idx + 1, 1, 1)
+
+        button = Gtk.Button()
+        button.set_label("Apply")
+        button.connect("clicked", self.on_apply_button)
+        self.grid.attach(button, 4, new_row_idx + 1, 1, 1)
+
+        try:
+            self.data_rows[0].name.select_region(0, 0)
+        except:
+            pass
+        self.empty_row.name.grab_focus()
+
+        self.box_outer_h.pack_start(self.grid, True, True, 20)
         self.show_all()
+
+    def on_del_button(self, button, index):
+        del self.local_data_copy[index]
+        while True:
+            if self.grid.get_child_at(0, 0) is not None:
+                self.grid.remove_row(0)
+            else:
+                break
+        self.box_outer_h.remove(self.grid)
+        del self.grid
+        self.build_grid()
+
+    def on_add_button(self, button):
+        name = self.empty_row.name.get_text()
+        command = self.empty_row.command.get_text()
+        icon = self.empty_row.icon.get_text()
+        new: dict = {"name": name, "cmd": command, "icon": icon}
+        self.local_data_copy.append(new)
+
+        while True:
+            if self.grid.get_child_at(0, 0) is not None:
+                self.grid.remove_row(0)
+            else:
+                break
+        self.box_outer_h.remove(self.grid)
+        del self.grid
+        self.build_grid()
+
+    def on_cancel_button(self, button):
+        self.close()
+
+    def on_apply_button(self, button):
+        # Assign values from Entry fields to the local data
+        for i in range(len(self.data_rows)):
+            row = self.data_rows[i]
+            self.local_data_copy[i]["name"] = row.name.get_text()
+            self.local_data_copy[i]["cmd"] = row.command.get_text()
+            self.local_data_copy[i]["icon"] = row.icon.get_text()
+
+        # Update actual config dictionary
+        for i in range(len(self.local_data_copy)):
+            self.config[self.config_key] = self.local_data_copy
+
+        self.close()
 
     class GridRowContent(object):
         def __init__(self, name, command, icon):
@@ -350,7 +442,7 @@ class TemplateEditionWindow(Gtk.Window):
             self.command = Gtk.Entry()
             self.command.set_property("name", "edit-field")
             self.command.set_text(command)
-            self.command.set_width_chars(20)
+            self.command.set_width_chars(25)
 
             self.icon = Gtk.Entry()
             self.icon.set_property("name", "edit-field")
