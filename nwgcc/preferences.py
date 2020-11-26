@@ -252,10 +252,10 @@ class PreferencesWindow(Gtk.Window):
         self.preferences[preferences_key] = int(spin_button.get_value())
 
     def on_user_rows_button(self, button):
-        tew = TemplateEditionWindow("User rows", self.config_data, self.config_file_path, "custom_rows")
+        tew = TemplateEditionWindow(self.preferences, "User rows", self.config_data, self.config_file_path, "custom_rows")
 
     def on_user_buttons_button(self, button):
-        tew = TemplateEditionWindow("User buttons", self.config_data, self.config_file_path, "buttons")
+        tew = TemplateEditionWindow(self.preferences, "User buttons", self.config_data, self.config_file_path, "buttons")
 
     def on_cancel_button(self, button):
         self.close()
@@ -280,13 +280,15 @@ class PreferencesWindow(Gtk.Window):
 
 
 class TemplateEditionWindow(Gtk.Window):
-    def __init__(self, win_name, config, config_file_path, config_key):
+    def __init__(self, preferences, win_name, config, config_file_path, config_key):
+        self.preferences = preferences
         self.config = config
         self.config_file_path = config_file_path
         self.config_key = config_key
 
         self.grid = Gtk.Grid()
         self.box_outer_h = None
+        self.empty_row = None
 
         self.data_rows = []
         self.local_data_copy = config[config_key].copy()
@@ -347,7 +349,8 @@ class TemplateEditionWindow(Gtk.Window):
             self.grid.attach(row.file_chooser_button, 3, i + 1, 1, 1)
 
             button = Gtk.Button()
-            button.set_label("Del")
+            image = Gtk.Image.new_from_pixbuf(create_pixbuf("edit-delete", self.preferences["icon_size_small"]))
+            button.set_image(image)
             button.connect("clicked", self.on_del_button, i)
             self.grid.attach(button, 4, i + 1, 1, 1)
 
@@ -365,7 +368,8 @@ class TemplateEditionWindow(Gtk.Window):
         self.grid.attach(self.empty_row.file_chooser_button, 3, new_row_idx, 1, 1)
 
         button = Gtk.Button()
-        button.set_label("Add")
+        image = Gtk.Image.new_from_pixbuf(create_pixbuf("list-add", self.preferences["icon_size_small"]))
+        button.set_image(image)
         button.connect("clicked", self.on_add_button)
         self.grid.attach(button, 4, new_row_idx, 1, 1)
 
