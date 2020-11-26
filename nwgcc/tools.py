@@ -29,12 +29,16 @@ def create_pixbuf(icon, size):
         if icon.endswith(".svg"):
             icon = "".join(icon.split(".")[:-1])
         if shared.icons_path:
-            icon = os.path.join(shared.icons_path, (icon + ".svg"))
+            icon_svg = os.path.join(shared.icons_path, (icon + ".svg"))
             try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon, size, size)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon_svg, size, size)
             except:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(shared.dirname, 'icons_light/icon-missing.svg'),
-                                                                size, size)
+                try:
+                    # if a custom icon of such name does not exist, let's try using a GTK icon
+                    pixbuf = shared.icon_theme.load_icon(icon, size, Gtk.IconLookupFlags.FORCE_SIZE)
+                except:
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                        os.path.join(shared.dirname, 'icons_light/icon-missing.svg'), size, size)
         else:
             try:
                 pixbuf = shared.icon_theme.load_icon(icon, size, Gtk.IconLookupFlags.FORCE_SIZE)
