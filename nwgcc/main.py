@@ -16,7 +16,7 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 from tools import *
 from preferences import PreferencesWindow
 
-debug = False
+shared.debug = False
 
 shared.dirname = os.path.dirname(__file__)
 data_dir = get_data_dir()
@@ -316,7 +316,7 @@ class PreferencesButton(CustomButton):
         self.connect("clicked", self.launch)
 
     def launch(self, widget):
-        preferences_window = PreferencesWindow(preferences,
+        preferences_window = PreferencesWindow(pref,
                                                os.path.join(data_dir, "preferences.json"),
                                                os.path.join(config_dir, "cli_commands"),
                                                config_data,
@@ -455,10 +455,9 @@ def main():
 
     args = parser.parse_args()
 
-    global debug
-    debug = args.debug
+    shared.debug = args.debug
 
-    if debug:
+    if shared.debug:
         check_all_commands(COMMANDS)
 
     if shared.icons_path:

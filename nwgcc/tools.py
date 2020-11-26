@@ -111,15 +111,25 @@ def init_preferences(src_file, dest_file):
     else:
         users = load_json(dest_file)
         default = load_json(src_file)
-        if set(users.keys()) != set(default.keys()):
+
+        ok = True
+        for section in default:
+            if set(users[section].keys()) != set(default[section].keys()):
+                print("Preferences section '{}' changed, updating".format(section))
+                ok = False
+
+        if not ok:
             users.update(default)
             save_json(users, dest_file)
+
             to_delete = []
-            for key in users:
-                if key not in default.keys():
-                    to_delete.append(key)
+            for section in default:
+                for key in users[section]:
+                    if key not in default[section].keys():
+                        to_delete.append(key)
             # in case some key is no longer used: delete from the users preferences
             if to_delete:
+                print("Deleting keys", to_delete)
                 for key in to_delete:
                     users.pop(key)
                 save_json(users, dest_file)

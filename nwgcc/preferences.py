@@ -9,8 +9,9 @@ from tools import save_json, load_cli_commands, save_string, create_pixbuf
 
 
 class PreferencesWindow(Gtk.Window):
-    def __init__(self, preferences, preferences_path, cli_path, config_data, config_file_path, icons_dict):
-        self.preferences = preferences
+    def __init__(self, pref, preferences_path, cli_path, config_data, config_file_path, icons_dict):
+        self.pref = pref
+        self.preferences = pref["preferences"]
         self.preferences_file = preferences_path
         self.cli_path = cli_path
         self.config_data = config_data
@@ -261,7 +262,7 @@ class PreferencesWindow(Gtk.Window):
 
     def on_apply_button(self, button):
         self.save_cli_commands()
-        save_json(self.preferences, self.preferences_file)
+        save_json(self.pref, self.preferences_file)
         GLib.timeout_add(0, Gtk.main_quit)
 
     def save_cli_commands(self):
