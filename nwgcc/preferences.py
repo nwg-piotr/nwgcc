@@ -87,6 +87,7 @@ class PreferencesWindow(Gtk.Window):
         button = Gtk.Button()
         image = Gtk.Image.new_from_pixbuf(create_pixbuf(self.icons_dict["command-edit"], 16))
         button.set_image(image)
+        button.connect("clicked", self.on_edit_command_user)
         hbox.pack_end(button, False, False, 0)
         grid.attach(hbox, 0, 4, 1, 1)
 
@@ -98,6 +99,7 @@ class PreferencesWindow(Gtk.Window):
         button = Gtk.Button()
         image = Gtk.Image.new_from_pixbuf(create_pixbuf(self.icons_dict["command-edit"], 16))
         button.set_image(image)
+        button.connect("clicked", self.on_edit_command_wifi)
         hbox.pack_end(button, False, False, 0)
         grid.attach(hbox, 1, 4, 1, 1)
 
@@ -109,6 +111,7 @@ class PreferencesWindow(Gtk.Window):
         button = Gtk.Button()
         image = Gtk.Image.new_from_pixbuf(create_pixbuf(self.icons_dict["command-edit"], 16))
         button.set_image(image)
+        button.connect("clicked", self.on_edit_command_bluetooth)
         hbox.pack_end(button, False, False, 0)
         grid.attach(hbox, 2, 4, 1, 1)
 
@@ -120,6 +123,7 @@ class PreferencesWindow(Gtk.Window):
         button = Gtk.Button()
         image = Gtk.Image.new_from_pixbuf(create_pixbuf(self.icons_dict["command-edit"], 16))
         button.set_image(image)
+        button.connect("clicked", self.on_edit_command_battery)
         hbox.pack_end(button, False, False, 0)
         grid.attach(hbox, 0, 5, 1, 1)
 
@@ -241,6 +245,18 @@ class PreferencesWindow(Gtk.Window):
         box_outer_h.pack_start(grid, True, True, 20)
 
         self.show_all()
+
+    def on_edit_command_user(self, button):
+        cew = CommandEditionWindow(self.preferences, "on-click-user")
+
+    def on_edit_command_wifi(self, button):
+        cew = CommandEditionWindow(self.preferences, "on-click-wifi")
+
+    def on_edit_command_bluetooth(self, button):
+        cew = CommandEditionWindow(self.preferences, "on-click-bluetooth")
+
+    def on_edit_command_battery(self, button):
+        cew = CommandEditionWindow(self.preferences, "on-click-battery")
 
     def on_icon_set_changed(self, combo):
         self.preferences["icon_set"] = combo.get_active_id()
@@ -468,6 +484,64 @@ class TemplateEditionWindow(Gtk.Window):
             self.icon.set_text(path)
             self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(path, 16))
             shared.initial_path = "/".join(path.split("/")[:-1])
+
+    def handle_keyboard(self, item, event):
+        if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:
+            self.close()
+        return True
+
+
+class CommandEditionWindow(Gtk.Window):
+    def __init__(self, preferences, preferences_key):
+        self.preferences = preferences
+        self.preferences_key = preferences_key
+        self.command = None
+
+        super(CommandEditionWindow, self).__init__()
+        self.set_title("Edit command")
+        self.set_default_size(10, 10)
+        self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+        self.set_modal(True)
+        self.set_property("name", "preferences")
+
+        self.connect("key-release-event", self.handle_keyboard)
+
+        self.init_ui()
+
+    def init_ui(self):
+        box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        box_outer_v.set_property("name", "user-form")
+        self.add(box_outer_v)
+
+        box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        box_outer_v.pack_start(box_outer_h, True, True, 0)
+
+        hbox = Gtk.HBox()
+
+        self.command = Gtk.Entry()
+        self.command.set_property("name", "edit-field")
+        self.command.set_placeholder_text("Enter new command")
+        self.command.set_text(self.preferences[self.preferences_key])
+        self.command.set_width_chars(25)
+        hbox.pack_start(self.command, True, True, 10)
+
+        button = Gtk.Button.new_with_label("Cancel")
+        button.connect("clicked", self.on_cancel_button)
+        hbox.pack_start(button, True, True, 0)
+
+        button = Gtk.Button.new_with_label("Apply")
+        button.connect("clicked", self.on_apply_button)
+        hbox.pack_start(button, True, True, 0)
+
+        box_outer_v.pack_start(hbox, True, True, 10)
+        self.show_all()
+
+    def on_cancel_button(self, button):
+        self.close()
+
+    def on_apply_button(self, button):
+        self.preferences[self.preferences_key] = self.command.get_text()
+        self.close()
 
     def handle_keyboard(self, item, event):
         if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:
