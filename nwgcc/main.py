@@ -28,10 +28,8 @@ init_config_files(os.path.join(shared.dirname, "configs"), config_dir)
 copy_files(os.path.join(shared.dirname, "icons_light"), os.path.join(data_dir, "icons_light"))
 copy_files(os.path.join(shared.dirname, "icons_dark"), os.path.join(data_dir, "icons_dark"))
 
-config_data = load_json(os.path.join(config_dir, "config.json"))
-
 # Init dictionaries from ~/.config/nwgcc/config.json
-
+config_data = load_json(os.path.join(config_dir, "config.json"))
 
 if "custom_rows" in config_data:
     CUSTOM_ROWS: dict = config_data["custom_rows"]
@@ -43,7 +41,7 @@ if "buttons" in config_data:
 else:
     BUTTONS = {}
 
-# Load preferences from ~/.local/share/nwgcc/preferences.json
+# Load preferences, icon and command definitions from ~/.local/share/nwgcc/preferences.json
 # Check the file presence and validity first
 pref: dict = init_preferences(os.path.join(shared.dirname, "preferences/preferences.json"),
                                os.path.join(data_dir, "preferences.json"))
@@ -61,6 +59,7 @@ else:
     COMMANDS = {}
     print("ERROR: Commands dictionary missing from '{}'".format(os.path.join(config_dir, "config.json")))
 
+# if path left empty, we use GTK icons
 if preferences["icon_set"] == "light":
     shared.icons_path = os.path.join(data_dir, "icons_light")
 elif preferences["icon_set"] == "dark":
@@ -113,11 +112,14 @@ class CustomRow(Gtk.EventBox):
         if self.image:
             self.hbox.pack_start(self.image, False, False, 5)
         self.hbox.pack_start(self.label, False, False, 4)
-        self.add(self.hbox)
         if cmd:
+            pixbuf = create_pixbuf(ICONS["click-me"], preferences["icon_size_small"])
+            image = Gtk.Image.new_from_pixbuf(pixbuf)
+            self.hbox.pack_end(image, False, False, 0)
             self.connect('button-press-event', launch_from_row, cmd)
             self.connect('enter-notify-event', self.on_enter_notify_event)
             self.connect('leave-notify-event', self.on_leave_notify_event)
+        self.add(self.hbox)    
 
     def update(self):
         self.name, self.icon = self.get_values()
