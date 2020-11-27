@@ -21,7 +21,7 @@ class PreferencesWindow(Gtk.Window):
         self.cli_textview = Gtk.TextView()
 
         super(PreferencesWindow, self).__init__()
-        self.set_title("Preferences")
+        self.set_title("nwgcc: Preferences")
         self.set_default_size(400, 100)
         self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.set_modal(True)
@@ -310,7 +310,7 @@ class TemplateEditionWindow(Gtk.Window):
         self.local_data_copy = config[config_key].copy()
 
         super(TemplateEditionWindow, self).__init__()
-        self.set_title(win_name)
+        self.set_title("nwgcc: Edit {}".format(win_name))
         self.set_default_size(700, 100)
         self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.set_modal(True)
@@ -498,7 +498,7 @@ class CommandEditionWindow(Gtk.Window):
         self.command = None
 
         super(CommandEditionWindow, self).__init__()
-        self.set_title("Edit command")
+        self.set_title("nwgcc: Edit command")
         self.set_default_size(10, 10)
         self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.set_modal(True)

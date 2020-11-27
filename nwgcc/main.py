@@ -342,7 +342,7 @@ class MyWindow(Gtk.Window):
         self.init_ui()
 
     def init_ui(self):
-        self.set_title("Control Center")
+        self.set_title("nwgcc: Control Center")
         self.set_default_size(300, 200)
 
         box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=36)
