@@ -271,12 +271,10 @@ class BrightnessRow(Gtk.HBox):
 
     def get_values(self):
         bri = get_brightness(COMMANDS["get_brightness"])
-        if bri > 90:
-            icon = ICONS["brightness-full"] if "brightness-full" in ICONS else "icon-missing"
-        elif bri > 50:
+        if bri > 70:
             icon = ICONS["brightness-high"] if "brightness-high" in ICONS else "icon-missing"
-        elif bri > 20:
-            icon = ICONS["brightness"] if "brightness" in ICONS else "icon-missing"
+        elif bri > 30:
+            icon = ICONS["brightness-medium"] if "brightness-medium" in ICONS else "icon-missing"
         else:
             icon = ICONS["brightness-low"] if "brightness-low" in ICONS else "icon-missing"
 

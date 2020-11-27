@@ -31,17 +31,16 @@
     "wifi-on": "network-wireless",
     "wifi-off": "network-wireless-offline",
     "command-edit": "emblem-symbolic-link",
-    "brightness-low": "display-brightness-low",
-    "brightness": "display-brightness",
-    "brightness-high": "display-brightness-high",
-    "brightness-full": "display-brightness-full",
+    "brightness-low": "display-brightness-low-symbolic",
+    "brightness-medium": "display-brightness-medium-symbolic",
+    "brightness-high": "display-brightness-high-symbolic",
     "bt-on": "bluetooth-active",
     "bt-off": "bluetooth-disabled",
     "volume-low": "audio-volume-low",
     "volume-medium": "audio-volume-medium",
     "volume-high": "audio-volume-high",
     "volume-muted": "audio-volume-muted",
-    "click-me": "mail-forward"
+    "click-me": "pan-end-symbolic"
   },
   "commands": {
     "get_battery": "upower -i $(upower -e | grep BAT) | grep --color=never -E 'state|to\\\\ full|to\\\\ empty|percentage'",

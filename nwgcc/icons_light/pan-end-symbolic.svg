@@ -14,7 +14,7 @@
    sodipodi:version="0.32"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    version="1.0"
-   sodipodi:docname="mail-forward.svg"
+   sodipodi:docname="pan-end-symbolic.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/thayer/archlinux-logo-contest/archer-full-detail.png"
    inkscape:export-xdpi="90"
@@ -124,38 +124,19 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.2426732"
-     inkscape:cx="-7.6505157"
-     inkscape:cy="22.415477"
+     inkscape:zoom="6.2421876"
+     inkscape:cx="5.1664495"
+     inkscape:cy="31.999997"
      inkscape:document-units="px"
-     inkscape:current-layer="g2424"
-     inkscape:window-width="1356"
-     inkscape:window-height="722"
+     inkscape:current-layer="g2210"
+     inkscape:window-width="1366"
+     inkscape:window-height="768"
      inkscape:window-x="0"
      inkscape:window-y="0"
      showgrid="false"
-     inkscape:window-maximized="1"
-     showguides="true"
-     inkscape:guide-bbox="true"
-     inkscape:document-rotation="0">
-    <sodipodi:guide
-       position="-9.1314141,0"
-       orientation="0,1"
-       id="guide1583"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-20.025031,64.080099"
-       orientation="0,1"
-       id="guide1585"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="0,54.808341"
-       orientation="1,0"
-       id="guide1005"
-       inkscape:locked="false"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)" />
-  </sodipodi:namedview>
+     inkscape:window-maximized="0"
+     showguides="false"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata2429">
     <rdf:RDF>
@@ -176,10 +157,14 @@
     <g
        id="g2424"
        transform="matrix(1.3473684,0,0,1.3473684,-632.88236,-513.34366)">
-      <path
-         style="fill:#222222;fill-opacity:1;stroke-width:1.11328"
-         d="m 695.16965,590.19461 12.24609,10.01953 -12.24609,10.01954 v -5.56641 h -6.67969 a 4.4531257,4.4531257 0 0 0 -4.45312,4.45312 4.4531257,4.4531257 0 0 0 4.00955,4.43139 8.9062501,8.9062501 0 0 1 -7.26822,-4.43139 8.9062501,8.9062501 0 0 1 0,-8.90625 8.9062501,8.9062501 0 0 1 7.71179,-4.45312 h 6.67969 z"
-         id="path1474" />
+      <g
+         id="g2210"
+         transform="matrix(0.25,0,0,0.25,502.3126,469.21738)">
+        <path
+           style="fill:#eeeeee;fill-opacity:1;stroke-width:11.875"
+           d="m 735.06265,589.9982 59.375,-59.375 -59.375,-59.375 z"
+           id="path2-3" />
+      </g>
     </g>
   </g>
 </svg>
