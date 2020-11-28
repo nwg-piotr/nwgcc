@@ -307,7 +307,7 @@ class PreferencesButton(CustomButton):
     def __init__(self):
         Gtk.Button.__init__(self)
         self.set_property("name", "custom-button")
-        pixbuf = create_pixbuf("emblem-system", preferences["icon_size_large"])
+        pixbuf = create_pixbuf("emblem-system-symbolic", preferences["icon_size_large"])
         image = Gtk.Image.new_from_pixbuf(pixbuf)
         self.set_always_show_image(True)
         self.set_image(image)
