@@ -229,7 +229,7 @@ class PreferencesWindow(Gtk.Window):
         button_box.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_label("Icons")
-        # button.connect("clicked", self.on_cancel_button)
+        button.connect("clicked", self.on_icons_button)
         button_box.pack_start(button, True, True, 0)
 
         button = Gtk.Button.new_with_label("Cancel")
@@ -272,6 +272,9 @@ class PreferencesWindow(Gtk.Window):
 
     def on_user_buttons_button(self, button):
         tew = TemplateEditionWindow(self.preferences, "User buttons", self.config_data, self.config_file_path, "buttons")
+
+    def on_icons_button(self, button):
+        iew = IconsEditionWindow(self.icons_dict)
 
     def on_cancel_button(self, button):
         self.close()
@@ -541,6 +544,106 @@ class CommandEditionWindow(Gtk.Window):
 
     def on_apply_button(self, button):
         self.preferences[self.preferences_key] = self.command.get_text()
+        self.close()
+
+    def handle_keyboard(self, item, event):
+        if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:
+            self.close()
+        return True
+
+
+class IconsEditionWindow(Gtk.Window):
+    def __init__(self, icons_dict):
+        self.icons_dict = icons_dict
+        self.grid = Gtk.Grid()
+        self.grid.set_column_spacing(10)
+        self.grid.set_row_spacing(10)
+
+        super(IconsEditionWindow, self).__init__()
+        self.set_title("nwgcc: Edit icons")
+        self.set_default_size(10, 10)
+        self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+        self.set_modal(True)
+        self.set_property("name", "preferences")
+
+        self.connect("key-release-event", self.handle_keyboard)
+
+        self.init_ui()
+
+    def init_ui(self):
+        box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        box_outer_v.set_property("name", "user-form")
+        self.add(box_outer_v)
+
+        box_outer_h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        box_outer_v.pack_start(box_outer_h, True, True, 0)
+
+        hbox = Gtk.HBox()
+
+        label= Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_text("Icon")
+        self.grid.attach(label, 0, 0, 1, 1)
+
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_text("Icon name or path")
+        self.grid.attach(label, 1, 0, 1, 1)
+
+        cnt = 1
+        for key in self.icons_dict:
+            row = self.ContentRow(key, self.icons_dict[key])
+            self.grid.attach(row.name, 0, cnt, 1, 1)
+            self.grid.attach(row.icon, 1, cnt, 1, 1)
+            self.grid.attach(row.file_chooser_button, 2, cnt, 1, 1)
+            cnt += 1
+
+        buttons_box = Gtk.HBox(spacing=4)
+
+        button = Gtk.Button.new_with_label("Restore defaults")
+        buttons_box.pack_start(button, False, False, 0)
+
+        button = Gtk.Button.new_with_label("Apply")
+        buttons_box.pack_end(button, False, False, 0)
+
+        button = Gtk.Button.new_with_label("Cancel")
+        button.connect("clicked", self.on_cancel_button)
+        buttons_box.pack_end(button, False, False, 0)
+
+        self.grid.attach(buttons_box, 0, cnt + 1, 3, 1)
+
+        hbox.pack_start(self.grid, False, False, 20)
+        box_outer_v.pack_start(hbox, True, True, 10)
+        self.show_all()
+
+    class ContentRow(object):
+        def __init__(self, name, icon):
+            self.name = Gtk.Label()
+            self.name.set_halign(Gtk.Align.START)
+            self.name.set_text(name)
+
+            self.icon = Gtk.Entry()
+            self.icon.set_property("name", "edit-field")
+            self.icon.set_text(icon)
+            self.icon.set_width_chars(40)
+            self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(icon, 16))
+            self.icon.connect("changed", self.on_icon_changed)
+
+            self.file_chooser_button = Gtk.FileChooserButton("", Gtk.FileChooserAction.OPEN)
+            self.file_chooser_button.set_width_chars(5)
+            self.file_chooser_button.set_current_folder(shared.initial_path)
+            self.file_chooser_button.connect("file-set", self.on_file_set)
+
+        def on_icon_changed(self, entry):
+            self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(entry.get_text(), 16))
+
+        def on_file_set(self, file_chooser):
+            path = file_chooser.get_filename()
+            self.icon.set_text(path)
+            self.icon.set_icon_from_pixbuf(Gtk.EntryIconPosition.PRIMARY, create_pixbuf(path, 16))
+            shared.initial_path = "/".join(path.split("/")[:-1])
+
+    def on_cancel_button(self, button):
         self.close()
 
     def handle_keyboard(self, item, event):
