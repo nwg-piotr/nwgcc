@@ -3,7 +3,7 @@
     background-color: rgba (72, 72, 70, 1.0);
 	/* background-image: url("/home/piotr/.config/nwg-launchers/nwgbar/bricks.png"); */
 	/* border-radius: 10px; */
-	border-style: solid;
+	border-style: none;
 	border-width: 1px;
 	border-color: rgba (248, 132, 97, 1.0);
 	color: #eee
@@ -23,6 +23,7 @@
 }
 
 #cli-label {
+    font-family: monospace;
     padding: 4px;
     border-radius: 3px;
     color: #eee
@@ -50,6 +51,11 @@ button {
     border-color: rgba (248, 132, 97, 0.7);
     margin-left: 5px;
     margin-right: 5px;
+	color: #eee
+}
+
+button:hover {
+	background-color: rgba (248, 132, 97, 1.0);
 	color: #eee
 }
 
@@ -116,3 +122,5 @@ spinbutton.horizontal {
 label {
 	color: #eee
 }
+
+grid {}
