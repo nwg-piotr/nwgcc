@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+import os
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib
 
 import shared
-from tools import save_json, load_cli_commands, save_string, create_pixbuf
+from tools import save_json, load_json, load_cli_commands, save_string, create_pixbuf
 
 
 class PreferencesWindow(Gtk.Window):
@@ -558,6 +560,7 @@ class IconsEditionWindow(Gtk.Window):
         self.grid = Gtk.Grid()
         self.grid.set_column_spacing(10)
         self.grid.set_row_spacing(10)
+        self.last_row = 0
 
         super(IconsEditionWindow, self).__init__()
         self.set_title("nwgcc: Edit icons")
@@ -598,16 +601,21 @@ class IconsEditionWindow(Gtk.Window):
             self.grid.attach(row.file_chooser_button, 2, cnt, 1, 1)
             cnt += 1
 
+        self.last_row = cnt
+
         buttons_box = Gtk.HBox(spacing=4)
 
         button = Gtk.Button.new_with_label("Restore defaults")
+        button.connect("clicked", self.on_restore_button)
         buttons_box.pack_start(button, False, False, 0)
 
         button = Gtk.Button.new_with_label("Apply")
+        button.connect("clicked", self.on_apply_button)
         buttons_box.pack_end(button, False, False, 0)
 
         button = Gtk.Button.new_with_label("Cancel")
         button.connect("clicked", self.on_cancel_button)
+        button.grab_focus()
         buttons_box.pack_end(button, False, False, 0)
 
         self.grid.attach(buttons_box, 0, cnt + 1, 3, 1)
@@ -615,6 +623,8 @@ class IconsEditionWindow(Gtk.Window):
         hbox.pack_start(self.grid, False, False, 20)
         box_outer_v.pack_start(hbox, True, True, 10)
         self.show_all()
+
+        self.grid.get_child_at(1, 1).select_region(0, 0)
 
     class ContentRow(object):
         def __init__(self, name, icon):
@@ -645,6 +655,23 @@ class IconsEditionWindow(Gtk.Window):
 
     def on_cancel_button(self, button):
         self.close()
+
+    def on_apply_button(self, button):
+        # read values from the form, update the dictionary
+        for i in range(1, self.last_row):
+            key = self.grid.get_child_at(0, i).get_text()
+            value = self.grid.get_child_at(1, i).get_text()
+            self.icons_dict[key] = value
+
+        self.close()
+
+    def on_restore_button(self, button):
+        pref = load_json(os.path.join(shared.dirname, "preferences/preferences.json"))
+        row = 1
+        for key in pref["icons"]:
+            self.grid.get_child_at(0, row).set_text(key)
+            self.grid.get_child_at(1, row).set_text(pref["icons"][key])
+            row += 1
 
     def handle_keyboard(self, item, event):
         if event.type == Gdk.EventType.KEY_RELEASE and event.keyval == Gdk.KEY_Escape:
