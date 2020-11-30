@@ -12,3 +12,10 @@ Main window, Nordic-bluish-accent GTK theme, custom icons Light:
 Preferences window:
 
 ![gui-config.png](https://scrot.cloud/images/2020/11/30/2020-11-30_224038.png)
+
+## TODO
+
+- avoid icon Gtk.Image objects re-creation on refresh if status unchanged
+- alternative `get_volume` / `set_volume` if the pyalsa module unavailable
+- bluetooth status detection on systemd-less systems
+- grab the GTK theme menu item background color for use with the CustomRow objects, instead of the hardcoded value 
