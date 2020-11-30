@@ -7,8 +7,8 @@ This is a work in progress, not yet production ready.
 
 Main window, custom styling:
 
-![gui.png](https://scrot.cloud/images/2020/11/24/gui.png)
+![gui.png](https://scrot.cloud/images/2020/11/30/2020-11-30_223904.png)
 
 Preferences window:
 
-![gui-config.png](https://scrot.cloud/images/2020/11/24/gui-config.png)
+![gui-config.png](https://scrot.cloud/images/2020/11/30/2020-11-30_224038.png)
