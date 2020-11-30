@@ -5,7 +5,7 @@ Default theme may be overridden with custom css style sheets.
 
 This is a work in progress, not yet production ready.
 
-Main window, custom styling:
+Main window, Nordic-bluish-accent GTK theme, custom icons Light:
 
 ![gui.png](https://scrot.cloud/images/2020/11/30/2020-11-30_223904.png)
 
