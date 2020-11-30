@@ -71,8 +71,6 @@ CLI_COMMANDS: list = parse_cli_commands(os.path.join(config_dir, "cli_commands")
 
 shared.icon_theme = Gtk.IconTheme.get_default()
 
-win = None
-
 
 def launch_from_row(widget, event, cmd):
     print("Executing '{}'".format(cmd))
@@ -505,9 +503,10 @@ def main():
                         """
         provider.load_from_data(css)
 
-    global win
     win = MyWindow()
     win.show_all()
+    # for testing purposes
+    win.set_position(Gtk.WindowPosition.MOUSE)
 
     # Refresh rows content in various intervals
     if preferences["refresh_fast_millis"] > 0:
