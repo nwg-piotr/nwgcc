@@ -334,6 +334,8 @@ class MyWindow(Gtk.Window):
         self.wifi_row = None
         self.bluetooth_row = None
         self.set_property("name", "window")
+        # This will only work on X11
+        self.set_position(Gtk.WindowPosition.MOUSE)
 
         self.connect("key-release-event", self.handle_keyboard)
 
@@ -505,8 +507,6 @@ def main():
 
     win = MyWindow()
     win.show_all()
-    # for testing purposes
-    win.set_position(Gtk.WindowPosition.MOUSE)
 
     # Refresh rows content in various intervals
     if preferences["refresh_fast_millis"] > 0:
