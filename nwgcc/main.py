@@ -455,11 +455,9 @@ def main():
     parser.add_argument("-p", "--pointer", action="store_true", help="place window at the mouse pointer position (Xorg only)")
     parser.add_argument("-css", type=str, default="style.css", help="custom css file name")
 
-    args = parser.parse_args()
+    shared.args = parser.parse_args()
 
-    shared.debug = args.debug
-
-    if shared.debug:
+    if shared.args.debug:
         check_all_commands(COMMANDS)
 
     if shared.icons_path:
