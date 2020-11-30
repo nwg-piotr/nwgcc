@@ -107,6 +107,9 @@ class PreferencesWindow(Gtk.Window):
 
         hbox = Gtk.HBox()
         checkbutton = Gtk.CheckButton.new_with_label("Bluetooth status")
+        checkbutton.set_sensitive(shared.bt_on)
+        if not shared.bt_on:
+            checkbutton.set_tooltip_text("Bluetooth not available")
         checkbutton.set_active(self.preferences["show_bt_line"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_bt_line")
         hbox.pack_start(checkbutton, False, False, 0)
@@ -189,6 +192,11 @@ class PreferencesWindow(Gtk.Window):
         checkbutton.set_active(self.preferences["dont_close"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "dont_close")
         grid.attach(checkbutton, 1, 9, 1, 1)
+
+        checkbutton = Gtk.CheckButton.new_with_label("Window decorations")
+        checkbutton.set_active(self.preferences["window_decorations"])
+        checkbutton.connect("toggled", self.on_checkbutton_toggled, "window_decorations")
+        grid.attach(checkbutton, 2, 9, 1, 1)
 
         label = Gtk.Label()
         label.set_halign(Gtk.Align.START)

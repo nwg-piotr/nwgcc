@@ -16,8 +16,6 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
 from tools import *
 from preferences import PreferencesWindow
 
-shared.debug = False
-
 shared.dirname = os.path.dirname(__file__)
 data_dir = get_data_dir()
 commands_dir = os.path.join(data_dir, "commands")
@@ -334,6 +332,8 @@ class MyWindow(Gtk.Window):
         self.wifi_row = None
         self.bluetooth_row = None
         self.set_property("name", "window")
+        if shared.args.pointer:
+            self.set_position(Gtk.WindowPosition.MOUSE)
 
         self.connect("key-release-event", self.handle_keyboard)
 
@@ -342,6 +342,7 @@ class MyWindow(Gtk.Window):
     def init_ui(self):
         self.set_title("nwgcc: Control Center")
         self.set_default_size(300, 200)
+        self.set_decorated(preferences["window_decorations"])
 
         box_outer_v = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=36)
         self.add(box_outer_v)
@@ -378,8 +379,10 @@ class MyWindow(Gtk.Window):
         if preferences["show_wifi_line"] and is_command(COMMANDS["get_ssid"]):
             self.wifi_row = WifiRow()
             v_box.pack_start(self.wifi_row, True, True, 0)
-        
-        if preferences["show_bt_line"] and is_command(COMMANDS["get_bluetooth_status"]) and bt_service_enabled(COMMANDS):
+
+        shared.bt_on = bt_service_enabled(COMMANDS) and is_command(COMMANDS["get_bluetooth_status"])
+
+        if shared.bt_on and preferences["show_bt_line"]:
             self.bluetooth_row = BluetoothRow()
             v_box.pack_start(self.bluetooth_row, True, True, 0)
 
@@ -449,13 +452,14 @@ def refresh_cli(window):
 def main():
     parser = argparse.ArgumentParser(description="nwg Control Center")
     parser.add_argument("-d", "--debug", action="store_true", help="do checks, print results")
+    parser.add_argument("-p", "--pointer", action="store_true", help="place window at the mouse pointer position (Xorg only)")
     parser.add_argument("-css", type=str, default="style.css", help="custom css file name")
 
-    args = parser.parse_args()
+    shared.args = parser.parse_args()
 
-    shared.debug = args.debug
+    #shared.debug = args.debug
 
-    if shared.debug:
+    if shared.args.debug:
         check_all_commands(COMMANDS)
 
     if shared.icons_path:
@@ -472,7 +476,7 @@ def main():
     style_context.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     if preferences["custom_styling"]:
-        css_path = os.path.join(config_dir, args.css)
+        css_path = os.path.join(config_dir, shared.args.css)
         try:
             provider.load_from_path(css_path)
             print("Style: '{}'".format(css_path))
@@ -505,8 +509,6 @@ def main():
 
     win = MyWindow()
     win.show_all()
-    # for testing purposes
-    win.set_position(Gtk.WindowPosition.MOUSE)
 
     # Refresh rows content in various intervals
     if preferences["refresh_fast_millis"] > 0:

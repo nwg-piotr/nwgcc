@@ -3,6 +3,7 @@
     "icon_set": "light",
     "custom_styling": true,
     "dont_close": false,
+    "window_decorations": false,
     "show_cli_label": true,
     "show_brightness_slider": true,
     "show_volume_slider": true,
