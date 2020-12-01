@@ -101,8 +101,11 @@ class CustomRow(Gtk.EventBox):
         Gtk.EventBox.__init__(self)
         self.hbox = Gtk.HBox()
         self.hbox.set_property("name", "row-normal")
+
         pixbuf = create_pixbuf(self.icon, preferences["icon_size_small"]) if icon else None
         self.image = Gtk.Image.new_from_pixbuf(pixbuf)
+        self.old_icon = icon  # We'll only update the image if icon != old_icon
+
         self.label = Gtk.Label()
         self.label.set_text(self.name)
         if self.image:
@@ -120,8 +123,10 @@ class CustomRow(Gtk.EventBox):
     def update(self):
         self.name, self.icon = self.get_values()
         self.label.set_text(self.name)
-        pixbuf = create_pixbuf(self.icon, preferences["icon_size_small"]) if self.icon else None
-        self.image.set_from_pixbuf(pixbuf)
+        if self.icon != self.old_icon:
+            pixbuf = create_pixbuf(self.icon, preferences["icon_size_small"]) if self.icon else None
+            self.image.set_from_pixbuf(pixbuf)
+            self.old_icon = self.icon
 
     def on_enter_notify_event(self, widget, event):
         self.hbox.set_property("name", "row-selected")
@@ -205,6 +210,7 @@ class VolumeRow(Gtk.HBox):
     def __init__(self):
         Gtk.HBox.__init__(self)
         vol, icon = self.get_values()
+        self.old_icon = icon
         pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
         if pixbuf:
             self.image = Gtk.Image.new_from_pixbuf(pixbuf)
@@ -222,9 +228,12 @@ class VolumeRow(Gtk.HBox):
 
     def update(self):
         vol, icon = self.get_values()
-        pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
-        if pixbuf:
-            self.image.set_from_pixbuf(pixbuf)
+        if icon != self.old_icon:
+            pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
+            if pixbuf:
+                self.image.set_from_pixbuf(pixbuf)
+                self.old_icon = icon
+
         self.scale.set_value(vol)
 
     def get_values(self):
@@ -243,6 +252,7 @@ class BrightnessRow(Gtk.HBox):
     def __init__(self):
         Gtk.HBox.__init__(self)
         bri, icon = self.get_values()
+        self.old_icon = icon
         pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
         if pixbuf:
             self.image = Gtk.Image.new_from_pixbuf(pixbuf)
@@ -260,9 +270,12 @@ class BrightnessRow(Gtk.HBox):
 
     def update(self):
         bri, icon = self.get_values()
-        pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
-        if pixbuf:
-            self.image.set_from_pixbuf(pixbuf)
+        if icon != self.old_icon:
+            pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
+            if pixbuf:
+                self.image.set_from_pixbuf(pixbuf)
+            self.old_icon = icon
+
         self.scale.set_value(bri)
 
     def get_values(self):

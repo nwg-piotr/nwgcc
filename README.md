@@ -15,7 +15,7 @@ Preferences window:
 
 ## TODO
 
-- avoid icon Gtk.Image objects re-creation on refresh if status unchanged
+- ~~avoid icon Gtk.Image objects re-creation on refresh if status unchanged~~
 - alternative `get_volume` / `set_volume` if the pyalsa module unavailable
 - bluetooth status detection on systemd-less systems
 - grab the GTK theme menu item background color for use with the CustomRow objects, instead of the hardcoded value 
