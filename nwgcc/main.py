@@ -487,6 +487,7 @@ def main():
     style_context.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     if preferences["custom_styling"]:
+
         css_path = os.path.join(config_dir, shared.args.css)
         try:
             provider.load_from_path(css_path)
@@ -506,12 +507,22 @@ def main():
             provider.load_from_data(css)
     else:
         print("Style: GTK")
+
+        # The CustomRow class is a HBox wrapped into Gtk.EventBox, but we want it to look like a MenuItem.
+        # We need to steal the menuitem:hover background color from the theme.
+        # This is a dirty workaround to the 4 years old issue: https://gitlab.gnome.org/GNOME/pygobject/-/issues/119
+        # THIS WILL RAISE DeprecationWarning
+        # See https://stackoverflow.com/a/54813620/4040598
+        mi = Gtk.MenuItem()
+        ctx = mi.get_style_context()
+        col = rgba_to_hex(ctx.get_background_color(Gtk.StateFlags.SELECTED)).encode('utf-8')
+
         css = b"""
                         #row-normal {
                             padding: 2px;
                         }
                         #row-selected {
-                            background-color: #eb4d4b;
+                            background-color: """ + col + b""";
                             padding: 2px;
                             color: #eee
                         }

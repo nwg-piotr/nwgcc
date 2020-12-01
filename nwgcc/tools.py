@@ -13,6 +13,16 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 
 
+def rgba_to_hex(color):
+    """
+    Return hexadecimal string for :class:`Gdk.RGBA` `color`
+    http://wrhansen.blogspot.com/2012/09/how-to-convert-gdkrgba-to-hex-string-in.html
+    """
+    return "#{0:02x}{1:02x}{2:02x}".format(int(color.red * 255),
+                                           int(color.green * 255),
+                                           int(color.blue * 255))
+
+
 def create_pixbuf(icon, size):
     # full path given
     if icon.startswith('/'):
