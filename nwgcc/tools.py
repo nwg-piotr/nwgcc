@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from pyalsa import alsamixer
 import os
 import subprocess
 import json
@@ -8,9 +7,18 @@ from shutil import copyfile
 
 import shared
 
+py_alsa = False
+try:
+    from pyalsa import alsamixer
+    py_alsa = True
+except:
+    pass
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
+
+py_alsa = False
 
 
 def rgba_to_hex(color):
@@ -159,28 +167,48 @@ def copy_files(src_dir, dest_dir):
             print("Copying '{}'".format(os.path.join(dest_dir, file)))
 
 
-def get_volume(channel="Master"):
-    mixer = alsamixer.Mixer()
-    mixer.attach()
-    mixer.load()
+def get_volume(alt_cmd):
+    vol = None
+    switch = False
+    if py_alsa:
+        mixer = alsamixer.Mixer()
+        mixer.attach()
+        mixer.load()
 
-    element = alsamixer.Element(mixer, channel)
-    max_vol = element.get_volume_range()[1]
-    vol = int(round(element.get_volume() * 100 / max_vol, 0))
-    del mixer
+        element = alsamixer.Element(mixer, "Master")
+        max_vol = element.get_volume_range()[1]
+        vol = int(round(element.get_volume() * 100 / max_vol, 0))
+        switch = element.get_switch()
+        del mixer
+    else:
+        result = cmd2string(alt_cmd)
+        if result:
+            lines = result.splitlines()
+            for line in lines:
+                if "Front Left:" in line:
+                    try:
+                        vol = int(line.split()[4][1:-2])
+                    except:
+                        pass
+                    switch = "on" in line.split()[5]
+                    break
 
-    return vol
+    return vol, switch
 
 
-def set_volume(percent, channel="Master"):
-    mixer = alsamixer.Mixer()
-    mixer.attach()
-    mixer.load()
+def set_volume(percent, alt_cmd):
+    if py_alsa:
+        mixer = alsamixer.Mixer()
+        mixer.attach()
+        mixer.load()
 
-    element = alsamixer.Element(mixer, channel)
-    max_vol = element.get_volume_range()[1]
-    element.set_volume_all(int(percent * max_vol / 100))
-    del mixer
+        element = alsamixer.Element(mixer, "Master")
+        max_vol = element.get_volume_range()[1]
+        element.set_volume_all(int(percent * max_vol / 100))
+        del mixer
+    else:
+        cmd = "{} {}% /dev/null 2>&1".format(alt_cmd, percent)
+        subprocess.call(cmd, shell=True)
 
 
 def get_brightness(cmd):
@@ -260,7 +288,10 @@ def bt_service_enabled(commands_dict):
 
 
 def cmd2string(cmd):
-    return subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
+    try:
+        return subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
+    except subprocess.CalledProcessError:
+        return ""
 
 
 def is_command(cmd, verbose=False):
@@ -292,6 +323,10 @@ def check_all_commands(commands_dict):
             commands.append(command)
     for command in commands:
         is_command(command, verbose=True)
+    if py_alsa:
+        print("  'pyalsa' module found")
+    else:
+        print("  'pyalsa' module not found, trying 'amixer'")
 
 
 def load_json(path):
