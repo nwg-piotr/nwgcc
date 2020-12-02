@@ -8,9 +8,9 @@ Project: https://github.com/nwg-piotr/nwgcc
 License: GPL-3.0-or-later
 """
 
-# Dependencies: python-pyalsa
-# Optional: bluez bluez-utils
-# For user defined commands: blueman bluez bluez-utils
+# Dependencies: 'light', 'wireless_tools'
+# Optional: 'bluez', 'bluez-utils', 'python-pyalsa' or 'amixer'
+# For sample user defined commands: 'blueman', 'bluez', 'bluez-utils'
 
 import time
 time_start = int(round(time.time() * 1000))
@@ -237,12 +237,16 @@ class VolumeRow(Gtk.HBox):
 
         self.scale = Gtk.Scale.new_with_range(orientation=Gtk.Orientation.HORIZONTAL, min=0, max=100, step=1)
         self.scale.connect("value-changed", self.set_volume)
-        self.scale.set_value(vol)
+        if vol is not None:
+            self.scale.set_value(vol)
+        else:
+            self.scale.set_value(0)
+            self.scale.set_sensitive(False)
         self.pack_start(self.scale, True, True, 5)
 
     def set_volume(self, widget):
         vol = self.scale.get_value()
-        set_volume(vol)
+        set_volume(vol, COMMANDS["set_volume_alt"])
         self.update()
 
     def update(self):
@@ -253,16 +257,26 @@ class VolumeRow(Gtk.HBox):
                 self.image.set_from_pixbuf(pixbuf)
                 self.old_icon = icon
 
-        self.scale.set_value(vol)
+        if vol is not None:
+            self.scale.set_value(vol)
+        else:
+            self.scale.set_value(0)
+            self.scale.set_sensitive(False)
 
     def get_values(self):
-        vol = get_volume()
-        if vol > 70:
-            icon = ICONS["volume-high"] if "volume-high" in ICONS else "icon-missing"
-        elif vol > 30:
-            icon = ICONS["volume-medium"] if "volume-medium" in ICONS else "icon-missing"
+        vol, switch = get_volume(COMMANDS["get_volume_alt"])
+        if switch:
+            if vol is not None:
+                if vol > 70:
+                    icon = ICONS["volume-high"] if "volume-high" in ICONS else "icon-missing"
+                elif vol > 30:
+                    icon = ICONS["volume-medium"] if "volume-medium" in ICONS else "icon-missing"
+                else:
+                    icon = ICONS["volume-low"] if "volume-low" in ICONS else "icon-missing"
+            else:
+                icon = ICONS["volume-muted"] if "volume-low" in ICONS else "icon-missing"
         else:
-            icon = ICONS["volume-low"] if "volume-low" in ICONS else "icon-missing"
+            icon = ICONS["volume-muted"] if "volume-low" in ICONS else "icon-missing"
 
         return vol, icon
 
