@@ -8,7 +8,7 @@ Project: https://github.com/nwg-piotr/nwgcc
 License: GPL-3.0-or-later
 """
 
-# Dependencies: 'light'
+# Dependencies: 'light', 'wireless_tools'
 # Optional: 'bluez', 'bluez-utils', 'python-pyalsa' or 'amixer'
 # For sample user defined commands: 'blueman', 'bluez', 'bluez-utils'
 
@@ -237,7 +237,7 @@ class VolumeRow(Gtk.HBox):
 
         self.scale = Gtk.Scale.new_with_range(orientation=Gtk.Orientation.HORIZONTAL, min=0, max=100, step=1)
         self.scale.connect("value-changed", self.set_volume)
-        if vol:
+        if vol is not None:
             self.scale.set_value(vol)
         else:
             self.scale.set_value(0)
@@ -257,7 +257,7 @@ class VolumeRow(Gtk.HBox):
                 self.image.set_from_pixbuf(pixbuf)
                 self.old_icon = icon
 
-        if vol:
+        if vol is not None:
             self.scale.set_value(vol)
         else:
             self.scale.set_value(0)
@@ -265,13 +265,16 @@ class VolumeRow(Gtk.HBox):
 
     def get_values(self):
         vol, switch = get_volume(COMMANDS["get_volume_alt"])
-        if vol and switch:
-            if vol > 70:
-                icon = ICONS["volume-high"] if "volume-high" in ICONS else "icon-missing"
-            elif vol > 30:
-                icon = ICONS["volume-medium"] if "volume-medium" in ICONS else "icon-missing"
+        if switch:
+            if vol is not None:
+                if vol > 70:
+                    icon = ICONS["volume-high"] if "volume-high" in ICONS else "icon-missing"
+                elif vol > 30:
+                    icon = ICONS["volume-medium"] if "volume-medium" in ICONS else "icon-missing"
+                else:
+                    icon = ICONS["volume-low"] if "volume-low" in ICONS else "icon-missing"
             else:
-                icon = ICONS["volume-low"] if "volume-low" in ICONS else "icon-missing"
+                icon = ICONS["volume-muted"] if "volume-low" in ICONS else "icon-missing"
         else:
             icon = ICONS["volume-muted"] if "volume-low" in ICONS else "icon-missing"
 
