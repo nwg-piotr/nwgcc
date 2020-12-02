@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+nwg Control Center
+Copyright (c) 2020 Piotr Miller
+e-mail: nwg.piotr@gmail.com
+Project: https://github.com/nwg-piotr/nwgcc
+License: GPL-3.0-or-later
+"""
+
 # Dependencies: python-pyalsa
 # Optional: bluez bluez-utils
 # For user defined commands: blueman bluez bluez-utils
@@ -100,7 +108,9 @@ class CustomRow(Gtk.EventBox):
         self.icon = icon
         Gtk.EventBox.__init__(self)
         self.hbox = Gtk.HBox()
-        self.hbox.set_property("name", "row-normal")
+
+        if preferences["custom_styling"]:
+            self.hbox.set_property("name", "row-normal")
 
         pixbuf = create_pixbuf(self.icon, preferences["icon_size_small"]) if icon else None
         self.image = Gtk.Image.new_from_pixbuf(pixbuf)
@@ -118,7 +128,10 @@ class CustomRow(Gtk.EventBox):
             self.connect('button-press-event', launch_from_row, cmd)
             self.connect('enter-notify-event', self.on_enter_notify_event)
             self.connect('leave-notify-event', self.on_leave_notify_event)
-        self.add(self.hbox)    
+        self.add(self.hbox)
+
+        self.style_context = self.hbox.get_style_context()
+        self.set_css_name("menuitem")
 
     def update(self):
         self.name, self.icon = self.get_values()
@@ -129,10 +142,16 @@ class CustomRow(Gtk.EventBox):
             self.old_icon = self.icon
 
     def on_enter_notify_event(self, widget, event):
-        self.hbox.set_property("name", "row-selected")
+        if preferences["custom_styling"]:
+            self.hbox.set_property("name", "row-selected")
+        else:
+            self.style_context.set_state(Gtk.StateFlags.SELECTED)
 
     def on_leave_notify_event(self, widget, event):
-        self.hbox.set_property("name", "row-normal")
+        if preferences["custom_styling"]:
+            self.hbox.set_property("name", "row-normal")
+        else:
+            self.style_context.set_state(Gtk.StateFlags.NORMAL)
 
 
 class UserRow(CustomRow):
@@ -331,7 +350,6 @@ class PreferencesButton(CustomButton):
                                                config_data,
                                                os.path.join(config_dir, "config.json"),
                                                ICONS)
-        #preferences_window.set_transient_for(win)
         preferences_window.show()
 
 
@@ -371,7 +389,7 @@ class MyWindow(Gtk.Window):
             v_box.pack_start(self.cli_label, True, True, 0)
 
             sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
-            v_box.add(sep)
+            v_box.pack_start(sep, True, True, 6)
 
         if preferences["show_brightness_slider"] and is_command(COMMANDS["get_brightness"]):
             self.brightness_row = BrightnessRow()
@@ -383,7 +401,7 @@ class MyWindow(Gtk.Window):
 
         if preferences["show_cli_label"] or preferences["show_brightness_slider"] or preferences["show_volume_slider"]:
             sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
-            v_box.add(sep)
+            v_box.pack_start(sep, True, True, 6)
 
         if preferences["show_user_line"]:
             self.user_row = UserRow()
@@ -407,7 +425,7 @@ class MyWindow(Gtk.Window):
         if preferences["show_user_line"] or preferences["show_wifi_line"] or preferences["show_bt_line"] \
                 or preferences["show_battery_line"]:
             sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
-            v_box.add(sep)
+            v_box.pack_start(sep, True, True, 6)
 
         if preferences["show_user_rows"] and CUSTOM_ROWS:
             for pos in CUSTOM_ROWS:
@@ -415,7 +433,7 @@ class MyWindow(Gtk.Window):
                 v_box.pack_start(h_box, False, False, 0)
 
             sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
-            v_box.add(sep)
+            v_box.pack_start(sep, True, True, 6)
 
         h_box = Gtk.HBox()
         # fixed Preferences button
@@ -428,7 +446,7 @@ class MyWindow(Gtk.Window):
                 for pos in BUTTONS:
                     btn = CustomButton(pos["name"], cmd=pos["cmd"], icon=pos["icon"])
                     h_box.pack_start(btn, True, False, 4)
-        v_box.pack_start(h_box, True, True, 0)
+        v_box.pack_start(h_box, True, True, 6)
 
         self.connect("destroy", Gtk.main_quit)
 
@@ -487,7 +505,6 @@ def main():
     style_context.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     if preferences["custom_styling"]:
-
         css_path = os.path.join(config_dir, shared.args.css)
         try:
             provider.load_from_path(css_path)
@@ -507,27 +524,6 @@ def main():
             provider.load_from_data(css)
     else:
         print("Style: GTK")
-
-        # The CustomRow class is a HBox wrapped into Gtk.EventBox, but we want it to look like a MenuItem.
-        # We need to steal the menuitem:hover background color from the theme.
-        # This is a dirty workaround to the 4 years old issue: https://gitlab.gnome.org/GNOME/pygobject/-/issues/119
-        # THIS WILL RAISE DeprecationWarning
-        # See https://stackoverflow.com/a/54813620/4040598
-        mi = Gtk.MenuItem()
-        ctx = mi.get_style_context()
-        col = rgba_to_hex(ctx.get_background_color(Gtk.StateFlags.SELECTED)).encode('utf-8')
-
-        css = b"""
-                        #row-normal {
-                            padding: 2px;
-                        }
-                        #row-selected {
-                            background-color: """ + col + b""";
-                            padding: 2px;
-                            color: #eee
-                        }
-                        """
-        provider.load_from_data(css)
 
     win = MyWindow()
     win.show_all()
