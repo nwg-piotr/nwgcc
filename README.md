@@ -15,5 +15,5 @@ Preferences window:
 
 ## TODO
 
-- alternative `get_volume` / `set_volume` if the pyalsa module unavailable
+~~- alternative `get_volume` / `set_volume` if the pyalsa module unavailable~~
 - bluetooth status detection on systemd-less systems
