@@ -13,7 +13,16 @@ Preferences window:
 
 ![gui-config.png](https://scrot.cloud/images/2020/11/30/2020-11-30_224038.png)
 
-## TODO
+## Dependencies: 
+- `python>=3.6`
+- `python-gobject`
+- `gtk3`
+- `python-setuptools` (build)
 
-~~- alternative `get_volume` / `set_volume` if the pyalsa module unavailable~~
-- bluetooth status detection on systemd-less systems
+## Components use optional dependencies:
+- Brightness slider: `light`
+- Volume slider: `alsa`, `alsa-utils`, `python-pyalsa` (recommended if available; if not - amixer command will be used)
+- Wi-fi status: `wireless_tools`
+- Bluetooth status: `bluez`, `bluez-utils`
+
+Sample user defined commands use `blueman` and `NetworkManager`.

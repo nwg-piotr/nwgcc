@@ -8,18 +8,14 @@ Project: https://github.com/nwg-piotr/nwgcc
 License: GPL-3.0-or-later
 """
 
-# Dependencies: 'light', 'wireless_tools'
-# Optional: 'bluez', 'bluez-utils', 'python-pyalsa' or 'amixer'
-# For sample user defined commands: 'blueman', 'bluez', 'bluez-utils'
-
 import time
 time_start = int(round(time.time() * 1000))
 import gi
 import sys
 import argparse
 
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gdk, GLib
 
 from tools import *
 from preferences import PreferencesWindow
@@ -50,7 +46,7 @@ else:
 # Load preferences, icon and command definitions from ~/.local/share/nwgcc/preferences.json
 # Check the file presence and validity first
 pref: dict = init_preferences(os.path.join(shared.dirname, "preferences/preferences.json"),
-                               os.path.join(data_dir, "preferences.json"))
+                              os.path.join(data_dir, "preferences.json"))
 preferences: dict = pref["preferences"]
 
 if "icons" in pref:
@@ -70,7 +66,6 @@ if preferences["icon_set"] == "light":
     shared.icons_path = os.path.join(data_dir, "icons_light")
 elif preferences["icon_set"] == "dark":
     shared.icons_path = os.path.join(data_dir, "icons_dark")
-
 
 # Init user-defined CLI commands list from the plain text file
 CLI_COMMANDS: list = parse_cli_commands(os.path.join(config_dir, "cli_commands"))
@@ -201,7 +196,7 @@ class WifiRow(CustomRow):
             pass
         if ssid:
             name = ssid
-            icon=ICONS["wifi-on"] if "wifi-on" in ICONS else "icon-missing"
+            icon = ICONS["wifi-on"] if "wifi-on" in ICONS else "icon-missing"
         else:
             name = "disconnected"
             icon = ICONS["wifi-off"] if "wifi-off" in ICONS else "icon-missing"
@@ -217,7 +212,7 @@ class BluetoothRow(CustomRow):
     def get_values(self):
         if bt_on(COMMANDS["get_bluetooth_status"]):
             name = bt_name(COMMANDS["get_bluetooth_name"])
-            icon=ICONS["bt-on"] if "bt-on" in ICONS else "icon-missing"
+            icon = ICONS["bt-on"] if "bt-on" in ICONS else "icon-missing"
         else:
             name = "disabled"
             icon = ICONS["bt-off"] if "bt-off" in ICONS else "icon-missing"
@@ -431,13 +426,13 @@ class MyWindow(Gtk.Window):
             self.bluetooth_row = BluetoothRow()
             v_box.pack_start(self.bluetooth_row, True, True, 0)
 
-        if preferences["show_battery_line"] and (is_command(COMMANDS["get_battery"].split()[0]) \
-                or is_command(COMMANDS["get_battery_alt"])):
+        if preferences["show_battery_line"] and (is_command(COMMANDS["get_battery"].split()[0])
+                                                 or is_command(COMMANDS["get_battery_alt"])):
             self.battery_row = BatteryRow()
             v_box.pack_start(self.battery_row, True, True, 0)
 
-        if preferences["show_user_line"] or preferences["show_wifi_line"] or preferences["show_bt_line"] \
-                or preferences["show_battery_line"]:
+        if preferences["show_user_line"] or preferences["show_wifi_line"] \
+                or preferences["show_bt_line"] or preferences["show_battery_line"]:
             sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
             v_box.pack_start(sep, True, True, 6)
 
@@ -497,7 +492,8 @@ def refresh_cli(window):
 def main():
     parser = argparse.ArgumentParser(description="nwg Control Center")
     parser.add_argument("-d", "--debug", action="store_true", help="do checks, print results")
-    parser.add_argument("-p", "--pointer", action="store_true", help="place window at the mouse pointer position (Xorg only)")
+    parser.add_argument("-p", "--pointer", action="store_true",
+                        help="place window at the mouse pointer position (Xorg only)")
     parser.add_argument("-css", type=str, default="style.css", help="custom css file name")
 
     shared.args = parser.parse_args()
@@ -524,18 +520,8 @@ def main():
             provider.load_from_path(css_path)
             print("Style: '{}'".format(css_path))
         except:
-            print("ERROR: couldn't load '{}'".format(css_path))
-            css = b"""
-                #row-normal {
-                    padding: 2px;
-                }
-                #row-selected {
-                    background-color: #eb4d4b;
-                    padding: 2px;
-                    color: #eee
-                }
-                """
-            provider.load_from_data(css)
+            print("ERROR: couldn't load '{}', using GTK theme".format(css_path))
+            preferences["custom_styling"] = False
     else:
         print("Style: GTK")
 
