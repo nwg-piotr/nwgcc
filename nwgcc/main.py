@@ -509,7 +509,7 @@ def main():
     shared.args = parser.parse_args()
 
     if shared.args.version:
-        print("nwgcc v{}".format(version()))
+        print("nwgcc version {}".format(version()))
         sys.exit(0)
 
     if shared.args.debug:
