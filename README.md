@@ -29,10 +29,25 @@ Sample user defined commands use `blueman` and `NetworkManager`.
 
 ## Installation
 
-There's still no release nor packages. For alpha testing, install this way:
+There's still no release nor packages. For alpha testing you may install this way:
 
 ```text
 git clone https://github.com/nwg-piotr/nwgcc.git
 cd nwgcc
-python setup.py
+sudo python setup.py
+```
+
+## Running
+
+```text
+$ nwgcc -h
+usage: nwgcc [-h] [-d] [-p] [-css CSS]
+
+nwg Control Center
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -d, --debug    do checks, print results
+  -p, --pointer  place window at the mouse pointer position (Xorg only)
+  -css CSS       custom css file name
 ```
