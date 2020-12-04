@@ -26,3 +26,13 @@ Preferences window:
 - Bluetooth status: `bluez`, `bluez-utils`
 
 Sample user defined commands use `blueman` and `NetworkManager`.
+
+## Installation
+
+There's still no release nor packages. For alpha testing, install this way:
+
+```text
+git clone https://github.com/nwg-piotr/nwgcc.git
+cd nwgcc
+python setup.py
+```

@@ -3,9 +3,10 @@
 import os
 import subprocess
 import json
+import pkg_resources
 from shutil import copyfile
 
-import shared
+from nwgcc import shared
 
 py_alsa = False
 try:
@@ -17,8 +18,6 @@ except:
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
-
-py_alsa = False
 
 
 def rgba_to_hex(color):

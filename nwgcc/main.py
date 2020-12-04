@@ -17,8 +17,8 @@ import argparse
 gi.require_version('Gdk', '3.0')
 from gi.repository import Gdk, GLib
 
-from tools import *
-from preferences import PreferencesWindow
+from nwgcc.tools import *
+from nwgcc.preferences import PreferencesWindow
 
 shared.dirname = os.path.dirname(__file__)
 data_dir = get_data_dir()
