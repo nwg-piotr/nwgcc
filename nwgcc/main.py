@@ -20,11 +20,6 @@ from gi.repository import Gdk, GLib
 from nwgcc.tools import *
 from nwgcc.preferences import PreferencesWindow
 
-try:
-    from .__about__ import __version__
-except ImportError:
-    __version__ = "ersion unknown"
-
 shared.dirname = os.path.dirname(__file__)
 data_dir = get_data_dir()
 commands_dir = os.path.join(data_dir, "commands")
@@ -494,18 +489,28 @@ def refresh_cli(window):
     return True
 
 
+def version():
+    try:
+        v = pkg_resources.require("nwgcc")[0].version
+    except:
+        v = 'unknown'
+
+    return v
+
+
 def main():
     parser = argparse.ArgumentParser(description="nwg Control Center")
-    parser.add_argument("-v", "--version",
-                        action="version",
-                        version="%(prog)s v{}".format(__version__),
-                        help="display version information")
+    parser.add_argument("-v", "--version", action="store_true", help="display version information")
     parser.add_argument("-d", "--debug", action="store_true", help="do checks, print results")
     parser.add_argument("-p", "--pointer", action="store_true",
                         help="place window at the mouse pointer position (Xorg only)")
     parser.add_argument("-css", type=str, default="style.css", help="custom css file name")
 
     shared.args = parser.parse_args()
+
+    if shared.args.version:
+        print("nwgcc v{}".format(version()))
+        sys.exit(0)
 
     if shared.args.debug:
         check_all_commands(COMMANDS)
