@@ -8,13 +8,13 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
+   width="16"
+   height="16"
    id="svg2424"
    sodipodi:version="0.32"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    version="1.0"
-   sodipodi:docname="user-available.svg"
+   sodipodi:docname="user-available-symbolic.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/thayer/archlinux-logo-contest/archer-full-detail.png"
    inkscape:export-xdpi="90"
@@ -113,6 +113,21 @@
        y1="104.50665"
        x2="606.91248"
        y2="303.14029" />
+    <style
+       id="current-color-scheme"
+       type="text/css">
+   .ColorScheme-Text { color:#dfdfdf; } .ColorScheme-Highlight { color:#4285f4; }
+  </style>
+    <style
+       id="current-color-scheme-4"
+       type="text/css">
+   .ColorScheme-Text { color:#dfdfdf; } .ColorScheme-Highlight { color:#4285f4; }
+  </style>
+    <style
+       id="current-color-scheme-3"
+       type="text/css">
+   .ColorScheme-Text { color:#dfdfdf; } .ColorScheme-Highlight { color:#4285f4; }
+  </style>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -124,36 +139,53 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.2426732"
-     inkscape:cx="33.406094"
-     inkscape:cy="33.86002"
+     inkscape:zoom="20.746079"
+     inkscape:cx="11.809464"
+     inkscape:cy="10.452904"
      inkscape:document-units="px"
-     inkscape:current-layer="g2424"
+     inkscape:current-layer="g2210"
      inkscape:window-width="1920"
-     inkscape:window-height="1054"
+     inkscape:window-height="1020"
      inkscape:window-x="0"
      inkscape:window-y="0"
      showgrid="false"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:document-rotation="0">
+     inkscape:document-rotation="0"
+     inkscape:lockguides="true">
     <sodipodi:guide
        position="-9.1314141,0"
        orientation="0,1"
        id="guide1583"
-       inkscape:locked="false" />
+       inkscape:locked="true" />
     <sodipodi:guide
-       position="-20.025031,64.080099"
+       position="-4.326,16"
        orientation="0,1"
        id="guide1585"
-       inkscape:locked="false" />
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
     <sodipodi:guide
        position="0,54.808341"
        orientation="1,0"
        id="guide1005"
-       inkscape:locked="false"
+       inkscape:locked="true"
        inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="16,7.9020841"
+       orientation="-1,0"
+       id="guide851"
+       inkscape:label=""
+       inkscape:locked="true"
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="-12.339681,0"
+       orientation="0,1"
+       id="guide853"
+       inkscape:label=""
+       inkscape:locked="true"
        inkscape:color="rgb(0,0,255)" />
   </sodipodi:namedview>
   <metadata
@@ -164,7 +196,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -176,10 +208,14 @@
     <g
        id="g2424"
        transform="matrix(1.3473684,0,0,1.3473684,-632.88236,-513.34366)">
-      <path
-         style="fill:#222222;fill-opacity:1;stroke-width:3.42548"
-         d="m 693.50037,579.60757 c 5.68629,0 10.27643,4.59014 10.27643,10.27643 0,5.65204 -4.59014,10.27647 -10.27643,10.27647 -5.68629,0 -10.27647,-4.62443 -10.27647,-10.27647 0,-5.68629 4.59018,-10.27643 10.27647,-10.27643 z m 0,27.40383 c 20.55286,-0.0323 20.55286,13.70192 20.55286,13.70192 v 3.42549 h -41.10576 v -3.42549 c 0,0 0,-13.70192 20.5529,-13.70192 z"
-         id="path2136" />
+      <g
+         id="g2210"
+         transform="matrix(0.25,0,0,0.25,502.3126,469.21738)">
+        <path
+           style="fill:#444444;fill-opacity:1;stroke-width:3.1971"
+           d="m 693.50016,438.59194 c 5.30721,0 9.59134,4.28412 9.59134,9.59134 0,5.27524 -4.28413,9.59137 -9.59134,9.59137 -5.3072,0 -9.59137,-4.31613 -9.59137,-9.59137 0,-5.30721 4.28417,-9.59134 9.59137,-9.59134 z m 0,25.57691 c 19.18269,-0.03 19.18269,12.78848 19.18269,12.78848 v 3.19711 h -38.3654 v -3.19711 c 0,0 0,-12.78848 19.18271,-12.78848 z"
+           id="path2136" />
+      </g>
     </g>
   </g>
 </svg>

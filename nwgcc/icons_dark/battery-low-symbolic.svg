@@ -8,13 +8,13 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
+   width="16"
+   height="16"
    id="svg2424"
    sodipodi:version="0.32"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    version="1.0"
-   sodipodi:docname="battery-low.svg"
+   sodipodi:docname="battery-low-symbolic.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/thayer/archlinux-logo-contest/archer-full-detail.png"
    inkscape:export-xdpi="90"
@@ -124,36 +124,53 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8886945"
-     inkscape:cx="174.8983"
-     inkscape:cy="73.95221"
+     inkscape:zoom="20.746079"
+     inkscape:cx="9.9476973"
+     inkscape:cy="7.2719109"
      inkscape:document-units="px"
      inkscape:current-layer="g2210"
      inkscape:window-width="1920"
-     inkscape:window-height="1054"
+     inkscape:window-height="1020"
      inkscape:window-x="0"
      inkscape:window-y="0"
      showgrid="false"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:document-rotation="0">
+     inkscape:document-rotation="0"
+     inkscape:lockguides="true">
     <sodipodi:guide
        position="-9.1314141,0"
        orientation="0,1"
        id="guide1583"
-       inkscape:locked="false" />
+       inkscape:locked="true" />
     <sodipodi:guide
-       position="-20.025031,64.080099"
+       position="-4.326,16"
        orientation="0,1"
        id="guide1585"
-       inkscape:locked="false" />
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
     <sodipodi:guide
        position="0,54.808341"
        orientation="1,0"
        id="guide1005"
-       inkscape:locked="false"
+       inkscape:locked="true"
        inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="16,7.9020841"
+       orientation="-1,0"
+       id="guide851"
+       inkscape:label=""
+       inkscape:locked="false"
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="-12.339681,0"
+       orientation="0,1"
+       id="guide853"
+       inkscape:label=""
+       inkscape:locked="false"
        inkscape:color="rgb(0,0,255)" />
   </sodipodi:namedview>
   <metadata
@@ -164,7 +181,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -180,8 +197,8 @@
          id="g2210"
          transform="matrix(0.25,0,0,0.25,502.3126,469.21738)">
         <path
-           style="opacity:1;fill:#222222;fill-opacity:1;stroke:none;stroke-width:10.99159813"
-           d="m 730.82299,435.62319 v 27.14203 H 696.8911 V 625.62319 H 832.60699 V 462.76522 h -33.926 v -27.14203 z m 19.50561,19.51142 h 28.84094 v 27.14202 h 33.92615 v 86.09375 h -96.07275 v -86.09375 h 33.30566 z"
+           style="fill:#444444;fill-opacity:1;stroke:none;stroke-width:2.40441"
+           d="m 686.0788,438.59195 v 5.93732 h -7.4226 v 35.62518 h 29.68785 v -35.62518 h -7.42131 v -5.93732 z m 4.26685,4.26812 h 6.30896 v 5.93732 h 7.42134 v 18.83301 h -21.01591 v -18.83301 h 7.28561 z"
            id="path878-5-1-2-7-6-6-5-6-8"
            inkscape:connector-curvature="0" />
       </g>

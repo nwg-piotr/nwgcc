@@ -8,13 +8,13 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
+   width="16"
+   height="16"
    id="svg2424"
    sodipodi:version="0.32"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    version="1.0"
-   sodipodi:docname="bluetooth-active.svg"
+   sodipodi:docname="bluetooth-active-symbolic.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/thayer/archlinux-logo-contest/archer-full-detail.png"
    inkscape:export-xdpi="90"
@@ -124,36 +124,53 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.56834"
-     inkscape:cx="33.92536"
-     inkscape:cy="31.805278"
+     inkscape:zoom="20.746079"
+     inkscape:cx="9.9476973"
+     inkscape:cy="7.2719109"
      inkscape:document-units="px"
-     inkscape:current-layer="g2424"
+     inkscape:current-layer="g2210"
      inkscape:window-width="1920"
-     inkscape:window-height="1034"
+     inkscape:window-height="1020"
      inkscape:window-x="0"
      inkscape:window-y="0"
      showgrid="false"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:document-rotation="0">
+     inkscape:document-rotation="0"
+     inkscape:lockguides="true">
     <sodipodi:guide
        position="-9.1314141,0"
        orientation="0,1"
        id="guide1583"
-       inkscape:locked="false" />
+       inkscape:locked="true" />
     <sodipodi:guide
-       position="-20.025031,64.080099"
+       position="-4.326,16"
        orientation="0,1"
        id="guide1585"
-       inkscape:locked="false" />
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
     <sodipodi:guide
        position="0,54.808341"
        orientation="1,0"
        id="guide1005"
-       inkscape:locked="false"
+       inkscape:locked="true"
        inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="16,7.9020841"
+       orientation="-1,0"
+       id="guide851"
+       inkscape:label=""
+       inkscape:locked="false"
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="-12.339681,0"
+       orientation="0,1"
+       id="guide853"
+       inkscape:label=""
+       inkscape:locked="false"
        inkscape:color="rgb(0,0,255)" />
   </sodipodi:namedview>
   <metadata
@@ -164,7 +181,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -176,10 +193,14 @@
     <g
        id="g2424"
        transform="matrix(1.3473684,0,0,1.3473684,-632.88236,-513.34366)">
-      <path
-         style="fill:#eeeeee;fill-opacity:1;stroke-width:2.7832"
-         d="m 693.50018,579.60746 c -8.48877,0 -15.30761,7.45898 -15.30761,16.69922 v 11.13281 c 0,9.24024 6.81884,16.69922 15.30761,16.69922 8.48877,0 15.30762,-7.45898 15.30762,-16.69922 v -11.13281 c 0,-9.24024 -6.81885,-16.69922 -15.30762,-16.69922 z m -1.39159,3.59033 11.80078,11.80079 -8.18262,6.87451 8.18262,6.8745 -11.80078,11.80078 v -15.64159 l -6.76319,5.67773 -1.78125,-2.11523 7.84863,-6.59619 -7.84863,-6.5962 1.78125,-2.11523 6.76319,5.67773 z m 2.7832,6.73535 v 9.01758 l 4.89844,-4.11914 z m 0,14.86231 v 9.01758 l 4.89844,-4.89844 z"
-         id="path964-7" />
+      <g
+         id="g2210"
+         transform="matrix(0.25,0,0,0.25,502.3126,469.21738)">
+        <path
+           style="fill:#eeeeee;fill-opacity:1;stroke-width:2.59765"
+           d="m 693.50011,438.59195 c -7.92285,0 -14.2871,6.96171 -14.2871,15.58594 v 10.39062 c 0,8.62423 6.36425,15.58594 14.2871,15.58594 7.92286,0 14.28712,-6.96171 14.28712,-15.58594 v -10.39062 c 0,-8.62423 -6.36426,-15.58594 -14.28712,-15.58594 z m -1.29881,3.35097 11.01406,11.01408 -7.63712,6.4162 7.63712,6.41621 -11.01406,11.01406 v -14.59882 l -6.31232,5.29921 -1.6625,-1.97421 7.32539,-6.15645 -7.32539,-6.15645 1.6625,-1.97421 6.31232,5.29921 z m 2.59765,6.28633 v 8.41641 l 4.57188,-3.84453 z m 0,13.87149 v 8.41641 l 4.57188,-4.57188 z"
+           id="path964-7" />
+      </g>
     </g>
   </g>
 </svg>

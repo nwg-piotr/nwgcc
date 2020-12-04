@@ -8,13 +8,13 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
+   width="16"
+   height="16"
    id="svg2424"
    sodipodi:version="0.32"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    version="1.0"
-   sodipodi:docname="list-add.svg"
+   sodipodi:docname="list-add-symbolic.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/thayer/archlinux-logo-contest/archer-full-detail.png"
    inkscape:export-xdpi="90"
@@ -119,6 +119,11 @@
    .ColorScheme-Text { color:#dfdfdf; } .ColorScheme-Highlight { color:#4285f4; }
   </style>
     <style
+       id="current-color-scheme-4"
+       type="text/css">
+   .ColorScheme-Text { color:#dfdfdf; } .ColorScheme-Highlight { color:#4285f4; }
+  </style>
+    <style
        id="current-color-scheme-3"
        type="text/css">
    .ColorScheme-Text { color:#dfdfdf; } .ColorScheme-Highlight { color:#4285f4; }
@@ -134,19 +139,55 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="5.1664495"
-     inkscape:cy="31.999997"
+     inkscape:zoom="20.746079"
+     inkscape:cx="11.809464"
+     inkscape:cy="7.560791"
      inkscape:document-units="px"
      inkscape:current-layer="g2210"
      inkscape:window-width="1920"
-     inkscape:window-height="1054"
+     inkscape:window-height="1020"
      inkscape:window-x="0"
      inkscape:window-y="0"
      showgrid="false"
      inkscape:window-maximized="1"
-     showguides="false"
-     inkscape:document-rotation="0" />
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:document-rotation="0"
+     inkscape:lockguides="true">
+    <sodipodi:guide
+       position="-9.1314141,0"
+       orientation="0,1"
+       id="guide1583"
+       inkscape:locked="true" />
+    <sodipodi:guide
+       position="-4.326,16"
+       orientation="0,1"
+       id="guide1585"
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="0,54.808341"
+       orientation="1,0"
+       id="guide1005"
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="16,7.9020841"
+       orientation="-1,0"
+       id="guide851"
+       inkscape:label=""
+       inkscape:locked="true"
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="-12.339681,0"
+       orientation="0,1"
+       id="guide853"
+       inkscape:label=""
+       inkscape:locked="true"
+       inkscape:color="rgb(0,0,255)" />
+  </sodipodi:namedview>
   <metadata
      id="metadata2429">
     <rdf:RDF>
@@ -171,9 +212,9 @@
          id="g2210"
          transform="matrix(0.25,0,0,0.25,502.3126,469.21738)">
         <path
-           style="fill:#222222;fill-opacity:1;stroke-width:12.7232"
+           style="fill:#444444;fill-opacity:1;stroke-width:2.96875"
            class="ColorScheme-Text"
-           d="m 752.02694,441.5607 v 76.33929 h -76.33929 v 25.44643 h 76.33929 v 76.33928 h 25.44644 v -76.33928 h 76.33927 V 517.89999 H 777.47337 V 441.5607 Z"
+           d="m 690.5314,438.59196 v 17.8125 h -17.8125 v 5.9375 h 17.8125 v 17.8125 h 5.9375 v -17.8125 h 17.8125 v -5.9375 h -17.8125 v -17.8125 z"
            id="path1176" />
       </g>
     </g>
