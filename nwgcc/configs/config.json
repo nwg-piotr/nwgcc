@@ -1,14 +1,9 @@
 {
   "custom_rows": [
     {
-      "name": "Wayfire Config Manager",
-      "cmd": "wcm > /dev/null 2>&1",
-      "icon": "/opt/wayfire/share/wayfire/icons/wayfire.png"
-    },
-    {
-      "name": "Wallpaper Manager",
-      "cmd": "azote > /dev/null 2>&1",
-      "icon": "/usr/share/azote/indicator_attention.png"
+      "name": "GIMP",
+      "cmd": "gimp",
+      "icon": "gimp"
     },
     {
       "name": "Lock screen",
@@ -19,7 +14,7 @@
   "buttons": [
     {
       "name": "Exit",
-      "cmd": "nwgbar -t exit-wayfire.json -c dock.css -o 0.0",
+      "cmd": "",
       "icon": "system-shutdown-symbolic"
     }
   ]

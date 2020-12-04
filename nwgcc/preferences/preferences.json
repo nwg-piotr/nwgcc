@@ -1,7 +1,7 @@
 {
   "preferences": {
     "icon_set": "light",
-    "custom_styling": true,
+    "custom_styling": false,
     "dont_close": false,
     "window_decorations": false,
     "show_cli_label": true,

@@ -1,5 +1,2 @@
 # Example line, will print 'Linux <kernel-release>'
 a=$(uname -s ; uname -r) ; echo $a
-
-# Weather from wttr.in (will slow down opening the window!)
-# w=$(curl 'https://wttr.in/Wellington?format=3' -s) ; echo $w
