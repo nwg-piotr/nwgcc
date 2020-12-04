@@ -15,7 +15,6 @@ setup(
     package_data={"": ["configs/*", "icons_dark/*", "icons_light/*", "preferences/*"]},
     url='https://github.com/nwg-piotr/nwgcc',
     license='GPL-3.0-or-later',
-    license_file='LICENSE',
     author='Piotr Miller',
     author_email='nwg.piotr@gmail.com',
     python_requires='>=3.4.0',
