@@ -1,9 +1,9 @@
 # nwgcc
-nwg Control Center is a higly customisable, GTK-based GUI, intended for use with window managers. 
+nwg Control Center is a highly customisable, GTK-based GUI, intended for use with window managers. 
 It may serve as an extension to bars / panels, providing built-in and user-defined controls. 
 Default theme may be overridden with custom css style sheets.
 
-This is a work in progress, not yet production ready.
+**This software is aimed at power users.**
 
 Main window, Nordic-bluish-accent GTK theme, custom icons Light:
 
@@ -14,40 +14,63 @@ Preferences window:
 ![gui-config.png](https://scrot.cloud/images/2020/11/30/2020-11-30_224038.png)
 
 ## Dependencies: 
-- `python>=3.6`
+- `python` (python3)
 - `python-gobject`
 - `gtk3`
-- `python-setuptools` (build)
+- `python-setuptools`
 
-## Components use optional dependencies:
-- Brightness slider: `light`
-- Volume slider: `alsa`, `alsa-utils`, `python-pyalsa` (recommended if available; if not - amixer command will be used)
-- Wi-fi status: `wireless_tools`
-- Bluetooth status: `bluez`, `bluez-utils`
+## Components:
 
-Sample user defined commands use `blueman` and `NetworkManager`.
+For built-in components to work, you need dependencies as below. If you don't need one, you may skip installing
+related packages (e.g. on a desktop machine, you probably don't need the brightness slider).
+
+- **Brightness slider**: `light`
+- **Volume slider**: `alsa`, `alsa-utils`, `python-pyalsa` (the latter is not necessary, but 
+  recommended if available; otherwise the `amixer` command output will be parsed)
+- **Wi-fi status**: `wireless_tools`
+- **Bluetooth status**: `bluez`, `bluez-utils`
+
+**Sample user defined commands** use `blueman` and `NetworkManager`.
 
 ## Installation
 
-There's still no release nor packages. For alpha testing you may install this way:
+This software is still in alpha stage of development, and has not yet been packaged for any Linux distribution.
+
+### Arch Linux 
+You may use the [PKGBUILD](https://github.com/nwg-piotr/nwgcc/blob/master/PKGBUILD) file to build 
+the `nwgcc-git` package from the `master` branch. It's recommendable, as you'll be able to uninstall easily. 
+
+### Other Linux distributions
 
 ```text
 git clone https://github.com/nwg-piotr/nwgcc.git
 cd nwgcc
-sudo python setup.py
+sudo python setup.py install --optimize=1
+```
+
+**To remove:**
+
+```text
+sudo rm -r /usr/lib/python3.9/site-packages/nwgcc*
+sudo rm /usr/bin/nwgcc
 ```
 
 ## Running
 
 ```text
 $ nwgcc -h
-usage: nwgcc [-h] [-d] [-p] [-css CSS]
+usage: nwgcc [-h] [-v] [-d] [-p] [-css CSS]
 
 nwg Control Center
 
 optional arguments:
   -h, --help     show this help message and exit
+  -v, --version  display version information
   -d, --debug    do checks, print results
   -p, --pointer  place window at the mouse pointer position (Xorg only)
   -css CSS       custom css file name
 ```
+
+Click the Preferences button to adjust the window to your needs.
+
+To report a bug or request a feature, please [sumbit an issue](https://github.com/nwg-piotr/nwgcc/issues).
