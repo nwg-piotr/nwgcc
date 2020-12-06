@@ -7,7 +7,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib
 
 from nwgcc import shared
-from nwgcc.tools import save_json, load_json, load_cli_commands, save_string, create_pixbuf
+from nwgcc.tools import save_json, load_json, load_cli_commands, save_string, create_pixbuf, is_command
 
 
 class PreferencesWindow(Gtk.Window):
@@ -76,10 +76,20 @@ class PreferencesWindow(Gtk.Window):
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_brightness_slider")
         grid.attach(checkbutton, 1, 3, 1, 1)
 
+        hbox = Gtk.HBox()
         checkbutton = Gtk.CheckButton.new_with_label("Volume slider")
         checkbutton.set_active(self.preferences["show_volume_slider"])
         checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_volume_slider")
-        grid.attach(checkbutton, 2, 3, 1, 1)
+        hbox.pack_start(checkbutton, False, False, 0)
+
+        checkbutton = Gtk.CheckButton.new_with_label("PlayerCtl")
+        checkbutton.set_active(self.preferences["show_playerctl"])
+        if is_command("playerctl"):
+            checkbutton.connect("toggled", self.on_checkbutton_toggled, "show_playerctl")
+        else:
+            checkbutton.set_sensitive(False)
+        hbox.pack_start(checkbutton, False, False, 0)
+        grid.attach(hbox, 2, 3, 1, 1)
 
         hbox = Gtk.HBox()
         checkbutton = Gtk.CheckButton.new_with_label("User info")

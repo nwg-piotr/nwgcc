@@ -26,7 +26,8 @@ related packages (e.g. on a desktop machine, you probably don't need the brightn
 
 - **Brightness slider**: `light`
 - **Volume slider**: `alsa`, `alsa-utils`, `python-pyalsa` (the latter is not necessary, but 
-  recommended if available; otherwise the `amixer` command output will be parsed)
+  recommended if available; otherwise the `amixer` command output will be parsed), **playerctl** - mpris media 
+  player controller buttons need the `playerctl` package 
 - **Wi-fi status**: `wireless_tools`
 - **Bluetooth status**: `bluez`, `bluez-utils`
 
