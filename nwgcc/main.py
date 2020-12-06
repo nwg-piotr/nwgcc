@@ -91,7 +91,10 @@ class CliLabel(Gtk.Label):
         output = ""
         for i in range(len(CLI_COMMANDS)):
             command = CLI_COMMANDS[i]
-            output += cmd2string(command)
+            o = cmd2string(command)
+            if len(o) > 38:
+                o = "{}…".format(o[0:38])
+            output += o
             if i < len(CLI_COMMANDS) - 1:
                 output += "\n"
         self.set_text(output)
@@ -225,6 +228,8 @@ class VolumeRow(Gtk.HBox):
         Gtk.HBox.__init__(self)
         vol, icon = self.get_values()
         self.old_icon = icon
+        self.play_pause_icon = ICONS["media-playback-start"]
+        self.play_pause_image = None
         pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
         if pixbuf:
             self.image = Gtk.Image.new_from_pixbuf(pixbuf)
@@ -238,6 +243,34 @@ class VolumeRow(Gtk.HBox):
             self.scale.set_value(0)
             self.scale.set_sensitive(False)
         self.pack_start(self.scale, True, True, 5)
+
+        if preferences["show_playerctl"] and is_command(COMMANDS["playerctl"]):
+            icon = ICONS["media-skip-backward"]
+            pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
+            image = Gtk.Image.new_from_pixbuf(pixbuf)
+            eb = Gtk.EventBox()
+            eb.add(image)
+            eb.connect('button-press-event', self.playerctl, "previous")
+            self.pack_start(eb, False, False, 4)
+
+            if self.playerctl_status() == "Paused" or self.playerctl_status() == "Stopped":
+                self.play_pause_icon = ICONS["media-playback-start"]
+            else:
+                self.play_pause_icon = ICONS["media-playback-pause"]
+            pixbuf = create_pixbuf(self.play_pause_icon, preferences["icon_size_small"]) if icon else None
+            self.play_pause_image = Gtk.Image.new_from_pixbuf(pixbuf)
+            eb = Gtk.EventBox()
+            eb.add(self.play_pause_image)
+            eb.connect('button-press-event', self.playerctl, "play-pause")
+            self.pack_start(eb, False, False, 4)
+
+            icon = ICONS["media-skip-forward"]
+            pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
+            image = Gtk.Image.new_from_pixbuf(pixbuf)
+            eb = Gtk.EventBox()
+            eb.add(image)
+            eb.connect('button-press-event', self.playerctl, "next")
+            self.pack_start(eb, False, False, 4)
 
     def set_volume(self, widget):
         vol = self.scale.get_value()
@@ -258,6 +291,17 @@ class VolumeRow(Gtk.HBox):
             self.scale.set_value(0)
             self.scale.set_sensitive(False)
 
+        if preferences["show_playerctl"]:
+            if self.playerctl_status() == "Playing":
+                icon = ICONS["media-playback-pause"]
+            else:
+                icon = ICONS["media-playback-start"]
+            if icon != self.play_pause_icon:
+                self.play_pause_icon = icon
+                pixbuf = create_pixbuf(icon, preferences["icon_size_small"]) if icon else None
+                if self.play_pause_image:
+                    self.play_pause_image.set_from_pixbuf(pixbuf)
+
     def get_values(self):
         vol, switch = get_volume(COMMANDS["get_volume_alt"])
         if switch:
@@ -274,6 +318,12 @@ class VolumeRow(Gtk.HBox):
             icon = ICONS["volume-muted"] if "volume-low" in ICONS else "icon-missing"
 
         return vol, icon
+
+    def playerctl_status(self):
+        return cmd2string("playerctl status /dev/null 2>&1")
+
+    def playerctl(self, widget, event, cmd):
+        subprocess.call("playerctl {} /dev/null 2>&1".format(cmd), shell=True)
 
 
 class BrightnessRow(Gtk.HBox):
@@ -365,6 +415,7 @@ class PreferencesButton(CustomButton):
 class MyWindow(Gtk.Window):
     def __init__(self):
         super(MyWindow, self).__init__()
+        self.cli_label = None
         self.brightness_row = None
         self.volume_row = None
         self.user_row = None

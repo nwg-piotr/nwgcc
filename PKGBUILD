@@ -13,6 +13,7 @@ depends=('python' 'python-setuptools' 'python-gobject' 'gtk3')
 optdepends=('alsa: volume slider'
 			'alsa-utils: volume slider'
 			'python-pyalsa: volume slider'
+			'playerctl: media player controller'
 			'light: brightness slider'
 			'wireless_tools: Wi-fi status'
 			'bluez: Bluetooth status'
