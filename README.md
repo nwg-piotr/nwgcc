@@ -7,11 +7,11 @@ Default theme may be overridden with custom css style sheets.
 
 Main window, Nordic-bluish-accent GTK theme, custom icons Light:
 
-![gui.png](https://scrot.cloud/images/2020/12/02/2020-12-02_022723.png)
+![gui.png](https://scrot.cloud/images/2020/12/07/2020-12-07_main.png)
 
 Preferences window:
 
-![gui-config.png](https://scrot.cloud/images/2020/11/30/2020-11-30_224038.png)
+![gui-config.png](https://scrot.cloud/images/2020/12/07/2020-12-07_preferences.png)
 
 ## Dependencies: 
 - `python` (python3)
