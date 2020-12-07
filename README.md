@@ -54,6 +54,8 @@ sudo rm -r /usr/lib/python3.9/site-packages/nwgcc*
 sudo rm /usr/bin/nwgcc
 ```
 
+Config and data files you'll find in `~/.config/nwgcc` and `~/.local/share/nwgcc`.
+
 ## Running
 
 ```text
