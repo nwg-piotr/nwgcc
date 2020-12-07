@@ -577,7 +577,7 @@ class IconsEditionWindow(Gtk.Window):
         self.icons_dict = icons_dict
         self.grid = Gtk.Grid()
         self.grid.set_column_spacing(10)
-        self.grid.set_row_spacing(10)
+        self.grid.set_row_spacing(3)
         self.last_row = 0
 
         super(IconsEditionWindow, self).__init__()
