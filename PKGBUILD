@@ -1,7 +1,7 @@
 # Maintainer: Piotr Miller <nwg.piotr@gmail.com>
 
 pkgname=nwgcc-git
-pkgver=0.0.1.r0.ga24a1c9
+pkgver=0.1.0
 pkgrel=1
 pkgdesc="nwg Control Center for window managers (development version)"
 arch=('x86_64')
