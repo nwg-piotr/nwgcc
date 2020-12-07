@@ -4,8 +4,6 @@ In Preferences, you may define one or more, new line-separated one-liner command
 **Do not forget to set the refresh rate** accordingly. You probably wouldn't like to check the weather once a second.
 Set the refresh rate to 0 to disable periodical script execution.
 
-Surely every one-liner may just execute some more complex, external script.
-
 ## Default command
 
 Prints 'Linux <kernel-release>'.
@@ -21,3 +19,22 @@ Requires the `playerctl` package.
 ## Weather
 
 `weather=$(curl 'https://wttr.in/Auckland?format=3') ; echo $weather`
+
+Surely every one-liner may just execute an external script, e.g.:
+
+## Now playing / date and time
+
+```bash
+#!/bin/sh
+
+status=$(playerctl status)
+
+if [[ ${status} == "Playing" ]] || [[ ${status} == "Paused" ]]
+then
+  info=$(playerctl metadata --format '{{artist}} - {{title}}')
+else
+  info=$(date "+%a, %d. %b  %H:%M")
+fi
+
+echo $info
+```
