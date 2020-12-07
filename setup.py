@@ -8,7 +8,7 @@ def read(f_name):
 
 setup(
     name='nwgcc',
-    version='0.0.1',
+    version='0.1.0',
     description='Simple control center for window managers',
     packages=find_packages(),
     include_package_data=True,
