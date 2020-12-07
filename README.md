@@ -35,11 +35,9 @@ related packages (e.g. on a desktop machine, you probably don't need the brightn
 
 ## Installation
 
-This software is still in alpha stage of development, and has not yet been packaged for any Linux distribution.
-
 ### Arch Linux 
-You may use the [PKGBUILD](https://github.com/nwg-piotr/nwgcc/blob/master/PKGBUILD) file to build 
-the `nwgcc-git` package from the `master` branch. It's recommendable, as you'll be able to uninstall easily. 
+Although there's no `nwgcc` in AUR, you may use the [PKGBUILD](https://github.com/nwg-piotr/nwgcc/blob/master/PKGBUILD) 
+file to build the `nwgcc-git` package from the `master` branch. It's recommendable, as you'll be able to uninstall easily. 
 
 ### Other Linux distributions
 
