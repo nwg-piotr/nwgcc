@@ -213,8 +213,8 @@ class BluetoothRow(CustomRow):
         super().__init__(name, cmd, icon)
 
     def get_values(self):
-        if bt_on(COMMANDS["get_bluetooth_status"]):
-            name = bt_name(COMMANDS["get_bluetooth_name"])
+        if bt_on(COMMANDS["get_bt_status"]):
+            name = bt_name(COMMANDS["get_bt_name"])
             icon = ICONS["bt-on"] if "bt-on" in ICONS else "icon-missing"
         else:
             name = "disabled"
@@ -471,7 +471,7 @@ class MyWindow(Gtk.Window):
             self.wifi_row = WifiRow()
             v_box.pack_start(self.wifi_row, True, True, 0)
 
-        shared.bt_on = bt_service_enabled(COMMANDS) and is_command(COMMANDS["get_bluetooth_status"])
+        shared.bt_on = bt_service_enabled(COMMANDS) and is_command(COMMANDS["get_bt_status"])
 
         if shared.bt_on and preferences["show_bt_line"]:
             self.bluetooth_row = BluetoothRow()

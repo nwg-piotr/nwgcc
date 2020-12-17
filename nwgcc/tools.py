@@ -265,12 +265,12 @@ def get_battery(cmd):
 
 def bt_on(cmd):
     output = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
-    return output.split()[1] == "yes"
+    return output == "yes"
 
 
 def bt_name(cmd):
     output = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
-    return output.split()[1]
+    return output
 
 
 def bt_service_enabled(commands_dict):
