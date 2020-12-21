@@ -422,6 +422,7 @@ class MyWindow(Gtk.Window):
         self.battery_row = None
         self.wifi_row = None
         self.bluetooth_row = None
+        self.preferences_btn = None
         self.set_property("name", "window")
         if shared.args.pointer:
             self.set_position(Gtk.WindowPosition.MOUSE)
@@ -497,8 +498,8 @@ class MyWindow(Gtk.Window):
 
         h_box = Gtk.HBox()
         # fixed Preferences button
-        btn = PreferencesButton()
-        h_box.pack_start(btn, True, False, 4)
+        self.preferences_btn = PreferencesButton()
+        h_box.pack_start(self.preferences_btn, True, False, 4)
 
         if preferences["show_user_buttons"] and BUTTONS:
             # user-defined buttons
@@ -555,6 +556,7 @@ def main():
     parser.add_argument("-d", "--debug", action="store_true", help="do checks, print results")
     parser.add_argument("-p", "--pointer", action="store_true",
                         help="place window at the mouse pointer position (Xorg only)")
+    parser.add_argument("-s", "--settings", action="store_true", help="open preferences window")
     parser.add_argument("-css", type=str, default="style.css", help="custom css file name")
 
     shared.args = parser.parse_args()
@@ -592,6 +594,9 @@ def main():
 
     win = MyWindow()
     win.show_all()
+
+    if shared.args.settings:
+        win.preferences_btn.launch(win.preferences_btn)
 
     # Refresh rows content in various intervals
     if preferences["refresh_fast_millis"] > 0:
