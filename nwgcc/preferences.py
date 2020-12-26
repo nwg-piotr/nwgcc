@@ -178,7 +178,7 @@ class PreferencesWindow(Gtk.Window):
         label.set_text("Small icons size")
         grid.attach(label, 1, 7, 1, 1)
 
-        spin_button = Gtk.SpinButton.new_with_range(0, 3600, 1)
+        spin_button = Gtk.SpinButton.new_with_range(8, 64, 1)
         spin_button.set_value(self.preferences["icon_size_small"])
         spin_button.connect("value-changed", self.on_spin_value_changed, "icon_size_small")
         grid.attach(spin_button, 1, 8, 1, 1)
@@ -188,7 +188,7 @@ class PreferencesWindow(Gtk.Window):
         label.set_text("Large icons size")
         grid.attach(label, 2, 7, 1, 1)
 
-        spin_button = Gtk.SpinButton.new_with_range(0, 3600, 1)
+        spin_button = Gtk.SpinButton.new_with_range(8, 64, 1)
         spin_button.set_value(self.preferences["icon_size_large"])
         spin_button.connect("value-changed", self.on_spin_value_changed, "icon_size_large")
         grid.attach(spin_button, 2, 8, 1, 1)
@@ -233,7 +233,7 @@ class PreferencesWindow(Gtk.Window):
         label.set_text("Battery refresh rate [s]")
         grid.attach(label, 2, 10, 1, 1)
 
-        spin_button = Gtk.SpinButton.new_with_range(1, 60, 1)
+        spin_button = Gtk.SpinButton.new_with_range(0, 60, 1)
         spin_button.set_value(self.preferences["refresh_slow_seconds"])
         spin_button.connect("value-changed", self.on_spin_value_changed, "refresh_slow_seconds")
         grid.attach(spin_button, 2, 11, 1, 1)
