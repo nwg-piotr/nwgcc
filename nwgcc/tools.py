@@ -274,14 +274,22 @@ def bt_name(cmd):
 
 
 def bt_service_enabled(commands_dict):
-    result = False
+    result, enabled, active = False, False, False
     if is_command(commands_dict["systemctl"]):
         try:
-            result = subprocess.check_output("systemctl is-enabled bluetooth.service", shell=True).decode(
+            enabled = subprocess.check_output("systemctl is-enabled bluetooth.service", shell=True).decode(
                 "utf-8").strip() == "enabled"
         except subprocess.CalledProcessError:
             # the command above returns the 'disabled` status w/ CalledProcessError, exit status 1
             pass
+
+        try:
+            active = subprocess.check_output("systemctl is-active bluetooth.service", shell=True).decode(
+                "utf-8").strip() == "active"
+        except subprocess.CalledProcessError:
+            pass
+
+        result = enabled and active
 
     return result
 
